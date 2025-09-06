@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Marcy Davis | Sculpture & Installation</title>
 
   <!-- Font: Playfair Display -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* ---- Background and Gradient Animation Base ---- */
+    /* ---- Reset / Base ---- */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       height: 100%;
@@ -18,8 +18,8 @@
       background-color: #111;
       background-image: radial-gradient(
         circle at center,
-        rgba(241,194,125,0.07) 0%,   /* soft skin tone */
-        rgba(10,35,10,0.15) 70%       /* dark royal green */
+        rgba(241,194,125,0.07) 0%,
+        rgba(10,35,10,0.15) 70%
       );
       background-size: 200% 200%;
       background-position: 20% 20%;
@@ -27,17 +27,18 @@
       transition: background-position 5s ease;
       overflow-x: hidden;
     }
-    body:hover {
-      background-position: 80% 80%;
-    }
+    body:hover { background-position: 80% 80%; }
 
+    /* ---- Views (client-side "pages") ---- */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ---- Shared layout ---- */
     .container {
       display: flex;
       flex-direction: column;
-      min-height: 100%;
+      min-height: 100vh;
     }
-
-    /* ---- Main content ---- */
     .main {
       flex: 1;
       display: flex;
@@ -53,6 +54,7 @@
       from { opacity: 0; transform: translateY(10px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
     .name {
       font-size: 3rem;
       margin-bottom: 4rem;
@@ -66,7 +68,7 @@
       animation: fadeIn 1s ease forwards 0.7s;
     }
 
-    /* ---- Image ---- */
+    /* ---- Image (home) ---- */
     .image-placeholder {
       width: 585px;
       height: 780px;
@@ -75,9 +77,7 @@
       overflow: hidden;
       transition: transform 0.3s ease;
     }
-    .image-placeholder:hover {
-      transform: scale(1.05);
-    }
+    .image-placeholder:hover { transform: scale(1.05); }
     .image-placeholder img {
       width: 100%;
       height: 100%;
@@ -85,7 +85,7 @@
       display: block;
     }
 
-    /* ---- Footer: Contacts ---- */
+    /* ---- Footer (Contact) ---- */
     .footer {
       display: flex;
       justify-content: flex-end;
@@ -98,7 +98,10 @@
       color: inherit;
       text-decoration: none;
       font-size: 1rem; /* fallback/mobile */
+      transition: transform 0.15s ease, opacity 0.2s ease;
+      opacity: 0.95;
     }
+    .contact a:hover { transform: scale(1.04); opacity: 1; }
     .contact a img {
       width: 24px;
       height: 24px;
@@ -106,27 +109,112 @@
       filter: invert(1);
     }
     .contact a img.email-icon {
-      /* keeps email slightly smaller on desktop */
       width: 21px;
       height: 21px;
     }
 
-    /* ---- Desktop-only footer sizing ---- */
-    @media (min-width: 769px) {
-      .contact a {
-        font-size: 1.25rem;
-      }
-      .contact a img {
-        width: 28px;
-        height: 28px;
-      }
-      .contact a img.email-icon {
-        width: 21px;
-        height: 21px;
-      }
+    /* ---- Nav Bar ---- */
+    .top-nav {
+      position: fixed;
+      top: 1rem;
+      left: 1.25rem;
+      display: flex;
+      gap: 1rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 50;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+    .top-nav:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .top-nav a {
+      color: #f0f0f0;
+      text-decoration: none;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      padding: 0.25rem 0.5rem;
+      opacity: 0.95;
+      transform: translateZ(0);
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+    .top-nav a:hover { transform: scale(1.06); opacity: 1; }
+    .top-nav a.active {
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
 
-    /* ---- Mobile: force matching icon sizes ---- */
+    /* ---- ABOUT page ---- */
+    .main.about {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 2rem;
+      padding-top: 5rem; 
+    }
+    .about-image {
+      width: min(780px, 90vw);
+      aspect-ratio: 3 / 4;
+      background: #222;
+      border-radius: 1rem;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+    }
+    .section-title {
+      font-size: 2rem;
+      letter-spacing: 0.5px;
+    }
+    .about-text {
+      max-width: 980px;
+      margin: 0 auto;
+      line-height: 1.75;
+      font-size: 1.125rem;
+      white-space: pre-line;
+      opacity: 0.98;
+    }
+    .about-cta {
+      margin-top: 1.5rem;
+      font-size: 1.25rem;
+      opacity: 0.98;
+    }
+
+    /* ---- CONTACT Page ---- */
+    .main.contact {
+      flex-direction: column;
+      gap: 1.25rem;
+      padding-top: 6rem;
+      text-align: center;
+    }
+    .contact-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .contact-center .contact a {
+      font-size: 1.25rem;
+    }
+    .contact-center .contact a img {
+      width: 28px;
+      height: 28px;
+    }
+    .contact-center .contact a img.email-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* ---- Desktop footer ---- */
+    @media (min-width: 769px) {
+      .contact a { font-size: 1.25rem; }
+      .contact a img { width: 28px; height: 28px; }
+      .contact a img.email-icon { width: 21px; height: 21px; }
+    }
+
+    /* ---- Mobile ---- */
     @media (max-width: 768px) {
       .main {
         flex-direction: column;
@@ -136,58 +224,174 @@
       .footer {
         flex-direction: column;
         gap: 1rem;
+        align-items: flex-end;
       }
       .image-placeholder {
         width: 80%;
         height: auto;
         aspect-ratio: 3/4;
       }
-      /* override both icons to be identical on mobile */
-      .contact a img {
-        width: 20px;
-        height: 20px;
-      }
+      .contact a img { width: 20px; height: 20px; }
+      .contact a img.email-icon { width: 18px; height: 18px; }
 
-      .contact a img.email-icon {
-      /* keeps email slightly smaller on mobile */
-      width: 18px;
-      height: 18px;
-     }
+      .top-nav {
+        left: 0.75rem;
+        gap: 0.75rem;
+        padding: 0.4rem 0.6rem;
+      }
+      .top-nav a { font-size: 1rem; }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="main">
-      <div class="left">
-        <h1 class="name">Marcy Davis</h1>
-        <p class="bio">
-          Marcy is a third-year MFA candidate in Sculpture at Texas Christian University.
-          She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
-          Her work draws from the remnants and ruins within the architecture of the body.
-        </p>
+  <!-- NAV BAR -->
+  <nav class="top-nav" aria-label="Primary">
+    <a href="#about" class="link-about" aria-label="About Me">About Me</a>
+    <a href="#contact" class="link-contact" aria-label="Contact Me">Contact Me</a>
+  </nav>
+
+  <!-- HOME (Main page) -->
+  <section id="home" class="view active" aria-labelledby="home-title">
+    <div class="container">
+      <div class="main">
+        <div class="left">
+          <h1 class="name" id="home-title">Marcy Davis</h1>
+          <p class="bio">
+            Marcy is a third-year MFA candidate in Sculpture at Texas Christian University.
+            She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
+            Her work draws from the remnants and ruins within the architecture of the body.
+          </p>
+        </div>
+        <div class="right">
+          <div class="image-placeholder">
+            <img src="images/marcy.png" alt="Marcy Davis" />
+          </div>
+        </div>
       </div>
-      <div class="right">
-        <div class="image-placeholder">
-          <img src="images/marcy.png" alt="Marcy Davis">
+
+      <div class="footer">
+        <div class="contact">
+          <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
+            <img src="images/instagram.svg" alt="Instagram" />
+            _mars_studio_
+          </a>
+        </div>
+        <div class="contact">
+          <a href="mailto:marcy.davis@tcu.edu">
+            <img src="images/email.svg" alt="Email" class="email-icon" />
+            marcy.davis@tcu.edu
+          </a>
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="footer">
-      <div class="contact">
-        <a href="https://instagram.com/_mars_studio_" target="_blank">
-          <img src="images/instagram.svg" alt="Instagram">
-          _mars_studio_
-        </a>
+  <!-- ABOUT -->
+  <section id="about" class="view" aria-labelledby="about-title">
+    <div class="container">
+      <div class="main about">
+        <div class="about-image" aria-label="Artist photo placeholder"></div>
+
+        <h2 class="section-title" id="about-title">Artist Statement</h2>
+
+        <div class="about-text">
+A body is never just a body. It is a structure held by skin, pressed against walls, sinking into the
+weight of land—yet it is also a terrain, restless and alive with invisible life. In these crossings,
+edges collapse: flesh becomes landscape, and architecture breathes like a body. My work unfolds
+in this unsettled in-between, where body and structure, inside and outside, are never fixed apart.
+In my practice, I warp the familiar until it becomes unrecognizable. Materials such as wax or felt
+masquerade as skin, wounds, or scars, yet remain unnamable, unstable. They slip between
+recognition and estrangement, provoking both attraction and unease. What matters is not the
+material itself, but the experience of not fully knowing.
+Thus, the result is work that doesn’t offer answers but confronts boundaries—the ones between
+body and structure, self and environment, fascination and repulsion. My installations invite
+viewers to linger in that environment, to feel the body as architecture, and architecture as a body
+unraveling. My work is deliberate in keeping it at arm’s length in understanding- contributing to
+a sense of ambiguity that promotes the viewer to outwardly experience the unknown.
+        </div>
+
+        <p class="about-cta">For my cv / full portfolio, please contact me.</p>
       </div>
-      <div class="contact">
-        <a href="mailto:marcy.davis@tcu.edu">
-          <img src="images/email.svg" alt="Email" class="email-icon">
-          marcy.davis@tcu.edu
-        </a>
+
+      <!-- Footer present on ABOUT as well -->
+      <div class="footer">
+        <div class="contact">
+          <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
+            <img src="images/instagram.svg" alt="Instagram" />
+            _mars_studio_
+          </a>
+        </div>
+        <div class="contact">
+          <a href="mailto:marcy.davis@tcu.edu">
+            <img src="images/email.svg" alt="Email" class="email-icon" />
+            marcy.davis@tcu.edu
+          </a>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="view" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="main contact">
+        <h2 class="section-title" id="contact-title">Contact Me</h2>
+
+        <div class="contact-center">
+          <div class="contact">
+            <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
+              <img src="images/instagram.svg" alt="Instagram" />
+              _mars_studio_
+            </a>
+          </div>
+          <div class="contact">
+            <a href="mailto:marcy.davis@tcu.edu">
+              <img src="images/email.svg" alt="Email" class="email-icon" />
+              marcy.davis@tcu.edu
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // hash-router: #about, #contact, default -> home
+    (function () {
+      const views = ['home', 'about', 'contact'];
+      const links = {
+        about: document.querySelector('.link-about'),
+        contact: document.querySelector('.link-contact'),
+      };
+
+      function setActiveLink(view) {
+        Object.keys(links).forEach(key => {
+          links[key].classList.toggle('active', view === key);
+          links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+        });
+      }
+
+      function showView(view) {
+        views.forEach(v => {
+          const el = document.getElementById(v);
+          if (el) el.classList.toggle('active', v === view);
+        });
+        setActiveLink(view);
+      }
+
+      function route() {
+        const hash = (location.hash || '').replace('#', '').toLowerCase();
+        if (views.includes(hash)) {
+          showView(hash);
+        } else {
+          showView('home');
+        }
+      }
+
+      window.addEventListener('hashchange', route);
+      window.addEventListener('DOMContentLoaded', route);
+    })();
+  </script>
 </body>
 </html>
