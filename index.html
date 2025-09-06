@@ -149,6 +149,9 @@
       text-underline-offset: 4px;
     }
 
+    /* small visual emphasis for the "MD" brand link (still matching your font) */
+    .top-nav a.link-home { font-weight: 700; letter-spacing: 0.5px; }
+
     /* ---- ABOUT page ---- */
     .main.about {
       flex-direction: column;
@@ -241,19 +244,24 @@
       }
       .top-nav a { font-size: 1rem; }
     }
+
+    /* reserve space under the fixed nav so content never sits underneath it on load (used on Home view) */
+    .with-nav { padding-top: 5rem; }
+    @media (max-width: 768px) { .with-nav { padding-top: 5.75rem; } }
   </style>
 </head>
 
 <body>
   <!-- NAV BAR -->
   <nav class="top-nav" aria-label="Primary">
+    <a href="#home" class="link-home" aria-label="Home">MD</a>
     <a href="#about" class="link-about" aria-label="About Me">About Me</a>
     <a href="#contact" class="link-contact" aria-label="Contact Me">Contact Me</a>
   </nav>
 
   <!-- HOME (Main page) -->
   <section id="home" class="view active" aria-labelledby="home-title">
-    <div class="container">
+    <div class="container with-nav">
       <div class="main">
         <div class="left">
           <h1 class="name" id="home-title">Marcy Davis</h1>
@@ -291,7 +299,7 @@
   <section id="about" class="view" aria-labelledby="about-title">
     <div class="container">
       <div class="main about">
-        <!-- For Future <div class="about-image" aria-label="Artist photo placeholder"></div> -->
+        <div class="about-image" aria-label="Artist photo placeholder"></div>
 
         <h2 class="section-title" id="about-title">Artist Statement</h2>
 
@@ -361,6 +369,7 @@ a sense of ambiguity that promotes the viewer to outwardly experience the unknow
     (function () {
       const views = ['home', 'about', 'contact'];
       const links = {
+        home: document.querySelector('.link-home'),
         about: document.querySelector('.link-about'),
         contact: document.querySelector('.link-contact'),
       };
