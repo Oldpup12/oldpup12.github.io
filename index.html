@@ -194,49 +194,69 @@
     /* Each year block: timeline column + artwork grid column */
     .work-year {
       display: grid;
-      grid-template-columns: 120px 1fr;
+      grid-template-columns: 140px 1fr;
       gap: 3rem;
       align-items: start;
+
+      /* animate-in on scroll */
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .work-year.in-view {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     /* Timeline cell draws the vertical line for the whole year block */
     .work-timeline-cell {
+      --line-x: 92px; /* line position so it does NOT overlap the year */
       position: relative;
       min-height: 100%;
     }
     .work-timeline-cell::before {
       content: "";
       position: absolute;
-      left: 32px;
+      left: var(--line-x);
       top: 0;
       bottom: 0;
       width: 2px;
       background: rgba(255,255,255,0.25);
       border-radius: 2px;
+      z-index: 0;
     }
 
-    /* Sticky year label: stays at top while this year’s artworks are in view */
+    /* Sticky year label */
     .work-year-label {
       position: sticky;
       top: 5.75rem; /* sits below fixed nav */
       display: inline-block;
-      margin-left: 0;
-      padding-left: 0;
-      font-size: 1.3rem;
-      letter-spacing: 0.5px;
-      opacity: 0.92;
+      font-size: 1.65rem; /* bigger */
+      letter-spacing: 0.6px;
+      opacity: 0.94;
+
+      /* ensures the line is never visible behind the year */
+      background: rgba(17, 17, 17, 0.92);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0.15rem 0.55rem;
+      border-radius: 0.75rem;
+
+      position: sticky;
+      z-index: 2;
     }
-    /* small tick from label to the line */
+
+    /* small tick from label to the line (optional but matches the timeline feel) */
     .work-year-label::after {
       content: "";
       position: absolute;
-      left: 32px;
-      top: 0.95em;
-      width: 18px;
+      left: calc(var(--line-x) - 16px);
+      top: 1.05em;
+      width: 16px;
       height: 2px;
       background: rgba(255,255,255,0.25);
-      transform: translateX(-18px);
       border-radius: 2px;
+      z-index: 1;
     }
 
     .work-grid {
@@ -246,7 +266,7 @@
       align-items: start;
     }
 
-    /* Clickable artwork card (opens future detail view) */
+    /* Clickable artwork card (opens detail overlay) */
     .work-card {
       display: block;
       color: inherit;
@@ -263,7 +283,6 @@
     }
     .work-card:hover .work-media { transform: scale(1.05); }
 
-    /* If/when you add images, just drop an <img> inside .work-media */
     .work-media img {
       width: 100%;
       height: 100%;
@@ -271,7 +290,6 @@
       display: block;
     }
 
-    /* Placeholder label (remove anytime) */
     .work-placeholder {
       position: absolute;
       inset: 0;
@@ -285,7 +303,6 @@
       padding: 1rem;
     }
 
-    /* Size label (bottom-right inside the artwork box) */
     .work-size {
       position: absolute;
       right: 0.85rem;
@@ -304,6 +321,129 @@
     .square { aspect-ratio: 1 / 1; }
     .landscape { aspect-ratio: 4 / 3; }
     .wide { aspect-ratio: 16 / 9; }
+
+    /* ---- Artwork detail overlay (inside Work) ---- */
+    .work-detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 60; /* above nav (nav still visible because it's fixed; overlay padding respects it) */
+      background: rgba(0,0,0,0.62);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .work-detail-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .work-detail-panel {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+      padding: 6.25rem 0 3rem; /* keep nav visible; content starts under nav */
+      transform: translateY(14px);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    .work-detail-overlay.open .work-detail-panel {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .detail-header {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .detail-text {
+      max-width: 980px;
+    }
+
+    .detail-meta {
+      font-size: 1.55rem;
+      letter-spacing: 0.3px;
+      opacity: 0.95;
+      margin-bottom: 0.6rem;
+    }
+
+    .detail-desc {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      opacity: 0.88;
+    }
+
+    .detail-close {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #f0f0f0;
+      border-radius: 999px;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+      flex: 0 0 auto;
+      margin-top: 0.1rem;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+    .detail-close:hover {
+      transform: scale(1.06);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .detail-media {
+      background: #222;
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+      transition: transform 0.6s ease;
+    }
+    .detail-media:hover { transform: scale(1.05); }
+
+    .detail-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .detail-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 1.05rem;
+      letter-spacing: 0.4px;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    /* lock scroll while modal is open, while preserving position */
+    body.modal-open {
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
+    }
 
     /* ---- Desktop footer ---- */
     @media (min-width: 769px) {
@@ -330,13 +470,18 @@
       }
       .top-nav a { font-size: 1rem; }
 
-      /* Work mobile: keep timeline, switch to single column for artworks */
       .main.work { padding-top: 6.25rem; }
-      .work-year { grid-template-columns: 78px 1fr; gap: 1.25rem; }
-      .work-timeline-cell::before { left: 22px; }
-      .work-year-label { top: 6.25rem; font-size: 1.15rem; }
-      .work-year-label::after { left: 22px; }
+
+      /* timeline stays, but single column for works */
+      .work-year { grid-template-columns: 98px 1fr; gap: 1.25rem; }
+      .work-timeline-cell { --line-x: 64px; }
+      .work-year-label { top: 6.25rem; font-size: 1.35rem; }
       .work-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+
+      /* detail view: single column images */
+      .work-detail-panel { padding-top: 6.75rem; }
+      .detail-meta { font-size: 1.35rem; }
+      .detail-grid { grid-template-columns: 1fr; gap: 1.25rem; }
     }
 
     /* reserve space under the fixed nav so content never sits underneath it on load (used on Home view) */
@@ -344,7 +489,6 @@
     @media (max-width: 768px) { .with-nav { padding-top: 5.75rem; } }
 
     /* ---- Page text animations (About/Contact/Work) ---- */
-    /* default hidden so they fade in only when their view gets .animate */
     #about .section-title,
     #about .about-text,
     #about .about-cta,
@@ -356,18 +500,15 @@
       opacity: 0;
     }
 
-    /* About: staggered fade-in */
     #about.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
     #about.animate .about-text { animation: fadeIn 0.8s ease forwards 0.2s; }
     #about.animate .about-cta { animation: fadeIn 0.8s ease forwards 0.4s; }
 
-    /* Contact: header, block, then each link */
     #contact.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
     #contact.animate .contact-center { animation: fadeIn 0.8s ease forwards 0.15s; }
     #contact.animate .contact-center .contact:nth-child(1) { animation: fadeIn 0.8s ease forwards 0.3s; }
     #contact.animate .contact-center .contact:nth-child(2) { animation: fadeIn 0.8s ease forwards 0.45s; }
 
-    /* Work: title then the whole layout */
     #work.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
     #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.15s; }
   </style>
@@ -409,7 +550,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -430,29 +571,28 @@
             </div>
 
             <div class="work-grid" aria-label="Works from 2025">
-              <!-- Fill left column, then right column, then next row naturally via grid order -->
-              <a class="work-card" href="#" aria-label="Open artwork: 2025 work 1">
+              <a class="work-card" href="#" data-artwork="2025-1" aria-label="Open artwork: 2025 work 1">
                 <div class="work-media portrait">
                   <div class="work-placeholder">Artwork 1 (placeholder)</div>
                   <div class="work-size">36 × 24 in</div>
                 </div>
               </a>
 
-              <a class="work-card" href="#" aria-label="Open artwork: 2025 work 2">
+              <a class="work-card" href="#" data-artwork="2025-2" aria-label="Open artwork: 2025 work 2">
                 <div class="work-media square">
                   <div class="work-placeholder">Artwork 2 (placeholder)</div>
                   <div class="work-size">20 × 20 in</div>
                 </div>
               </a>
 
-              <a class="work-card" href="#" aria-label="Open artwork: 2025 work 3">
+              <a class="work-card" href="#" data-artwork="2025-3" aria-label="Open artwork: 2025 work 3">
                 <div class="work-media landscape">
                   <div class="work-placeholder">Artwork 3 (placeholder)</div>
                   <div class="work-size">30 × 22 in</div>
                 </div>
               </a>
 
-              <a class="work-card" href="#" aria-label="Open artwork: 2025 work 4">
+              <a class="work-card" href="#" data-artwork="2025-4" aria-label="Open artwork: 2025 work 4">
                 <div class="work-media wide">
                   <div class="work-placeholder">Artwork 4 (placeholder)</div>
                   <div class="work-size">48 × 27 in</div>
@@ -468,21 +608,21 @@
             </div>
 
             <div class="work-grid" aria-label="Works from 2024">
-              <a class="work-card" href="#" aria-label="Open artwork: 2024 work 1">
+              <a class="work-card" href="#" data-artwork="2024-1" aria-label="Open artwork: 2024 work 1">
                 <div class="work-media portrait">
                   <div class="work-placeholder">Artwork 1 (placeholder)</div>
                   <div class="work-size">40 × 28 in</div>
                 </div>
               </a>
 
-              <a class="work-card" href="#" aria-label="Open artwork: 2024 work 2">
+              <a class="work-card" href="#" data-artwork="2024-2" aria-label="Open artwork: 2024 work 2">
                 <div class="work-media landscape">
                   <div class="work-placeholder">Artwork 2 (placeholder)</div>
                   <div class="work-size">32 × 18 in</div>
                 </div>
               </a>
 
-              <a class="work-card" href="#" aria-label="Open artwork: 2024 work 3">
+              <a class="work-card" href="#" data-artwork="2024-3" aria-label="Open artwork: 2024 work 3">
                 <div class="work-media square">
                   <div class="work-placeholder">Artwork 3 (placeholder)</div>
                   <div class="work-size">24 × 24 in</div>
@@ -491,6 +631,28 @@
             </div>
           </div>
         </div>
+
+        <!-- Artwork Detail Overlay (stays within Work; no timeline here) -->
+        <div class="work-detail-overlay" id="workDetailOverlay" aria-hidden="true">
+          <div class="work-detail-panel" role="dialog" aria-modal="true" aria-label="Artwork details">
+            <div class="detail-header">
+              <div class="detail-text">
+                <div class="detail-meta" id="detailMeta">Title • Material • Size</div>
+                <div class="detail-desc" id="detailDesc">
+                  I am a description, and I am an art work. I am a nice artwork, so please like me.
+                  I was made with love and care and you should be happy about me.
+                </div>
+              </div>
+
+              <button class="detail-close" id="detailClose" aria-label="Close artwork view">×</button>
+            </div>
+
+            <div class="detail-grid" id="detailGrid" aria-label="Artwork images">
+              <!-- injected by JS -->
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- Footer present on WORK as well -->
@@ -504,7 +666,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -515,7 +677,6 @@
   <section id="about" class="view" aria-labelledby="about-title">
     <div class="container">
       <div class="main about">
-        <!-- <div class="about-image" aria-label="Artist photo placeholder"></div> -->
         <h2 class="section-title" id="about-title">Artist Statement</h2>
         <div class="about-text">
           A body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land—yet it is also a terrain, restless and alive with invisible life. In these crossings, edges collapse: flesh becomes landscape, and architecture breathes like a body. My work unfolds in this unsettled in-between, where body and structure, inside and outside, are never fixed apart.
@@ -525,7 +686,6 @@
         <p class="about-cta">For my cv / full portfolio, please contact me.</p>
       </div>
 
-      <!-- Footer present on ABOUT as well -->
       <div class="footer">
         <div class="contact">
           <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
@@ -536,7 +696,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -558,7 +718,7 @@
           <div class="contact">
             <a href="mailto:marcy.davis@tcu.edu">
               <img src="images/email.svg" alt="Email" class="email-icon" />
-              marcy.davis@tcu.edu
+              [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
             </a>
           </div>
         </div>
@@ -567,7 +727,9 @@
   </section>
 
   <script>
-    // hash-router: #work, #about, #contact, default -> home
+    // ----------------------------
+    // Router
+    // ----------------------------
     (function () {
       const views = ['home', 'work', 'about', 'contact'];
       const links = {
@@ -585,7 +747,6 @@
       }
 
       function showView(view) {
-        // Always jump to top when switching views (especially important for Work scroll)
         window.scrollTo(0, 0);
 
         views.forEach(v => {
@@ -594,7 +755,6 @@
 
           el.classList.toggle('active', v === view);
 
-          // re-trigger animations by toggling .animate on the active view
           if (v === view) {
             el.classList.remove('animate');
             void el.offsetWidth;
@@ -605,6 +765,7 @@
         });
 
         setActiveLink(view);
+        if (view === 'work') requestAnimationFrame(markVisibleYears);
       }
 
       function route() {
@@ -615,6 +776,200 @@
 
       window.addEventListener('hashchange', route);
       window.addEventListener('DOMContentLoaded', route);
+
+      // ----------------------------
+      // Work: animate each year on scroll
+      // ----------------------------
+      let yearObserver = null;
+
+      function setupYearObserver() {
+        const years = document.querySelectorAll('.work-year');
+        if (!years.length) return;
+
+        if (yearObserver) yearObserver.disconnect();
+
+        yearObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('in-view'); // "load" it once
+              yearObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -12% 0px' });
+
+        years.forEach(y => yearObserver.observe(y));
+      }
+
+      function markVisibleYears() {
+        // in case user opens Work directly, ensure observer exists and any already-visible years are revealed
+        setupYearObserver();
+        const years = document.querySelectorAll('.work-year');
+        years.forEach(y => {
+          const rect = y.getBoundingClientRect();
+          const inViewport = rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.05;
+          if (inViewport) y.classList.add('in-view');
+        });
+      }
+
+      // ----------------------------
+      // Work: detail overlay (keeps Work scroll state)
+      // ----------------------------
+      const overlay = document.getElementById('workDetailOverlay');
+      const closeBtn = document.getElementById('detailClose');
+      const detailMeta = document.getElementById('detailMeta');
+      const detailDesc = document.getElementById('detailDesc');
+      const detailGrid = document.getElementById('detailGrid');
+
+      const ARTWORKS = {
+        "2025-1": {
+          title: "Work 1",
+          material: "Wax, felt",
+          size: "36 × 24 in",
+          description: "I am a description, and I am an art work. I am a nice artwork, so please like me.",
+          images: [
+            { ratio: "portrait", label: "Image 1 (display image)" },
+            { ratio: "portrait", label: "Image 2" },
+            { ratio: "square", label: "Image 3" },
+            { ratio: "square", label: "Image 4" },
+          ]
+        },
+        "2025-2": {
+          title: "Work 2",
+          material: "Mixed media",
+          size: "20 × 20 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "square", label: "Image 1 (display image)" },
+            { ratio: "portrait", label: "Image 2" },
+            { ratio: "landscape", label: "Image 3" },
+            { ratio: "square", label: "Image 4" },
+          ]
+        },
+        "2025-3": {
+          title: "Work 3",
+          material: "Found objects",
+          size: "30 × 22 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "landscape", label: "Image 1 (display image)" },
+            { ratio: "portrait", label: "Image 2" },
+            { ratio: "portrait", label: "Image 3" },
+            { ratio: "wide", label: "Image 4" },
+          ]
+        },
+        "2025-4": {
+          title: "Work 4",
+          material: "Plaster, pigment",
+          size: "48 × 27 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "wide", label: "Image 1 (display image)" },
+            { ratio: "square", label: "Image 2" },
+            { ratio: "landscape", label: "Image 3" },
+            { ratio: "portrait", label: "Image 4" },
+          ]
+        },
+        "2024-1": {
+          title: "Work 1",
+          material: "Mixed media",
+          size: "40 × 28 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "portrait", label: "Image 1 (display image)" },
+            { ratio: "portrait", label: "Image 2" },
+            { ratio: "square", label: "Image 3" },
+            { ratio: "landscape", label: "Image 4" },
+          ]
+        },
+        "2024-2": {
+          title: "Work 2",
+          material: "Wax",
+          size: "32 × 18 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "landscape", label: "Image 1 (display image)" },
+            { ratio: "wide", label: "Image 2" },
+            { ratio: "portrait", label: "Image 3" },
+            { ratio: "square", label: "Image 4" },
+          ]
+        },
+        "2024-3": {
+          title: "Work 3",
+          material: "Felt, thread",
+          size: "24 × 24 in",
+          description: "This is a placeholder description that you can replace later.",
+          images: [
+            { ratio: "square", label: "Image 1 (display image)" },
+            { ratio: "square", label: "Image 2" },
+            { ratio: "portrait", label: "Image 3" },
+            { ratio: "landscape", label: "Image 4" },
+          ]
+        }
+      };
+
+      let savedScrollY = 0;
+
+      function renderDetailImages(images) {
+        detailGrid.innerHTML = images.map((img, idx) => {
+          return `
+            <div class="detail-media ${img.ratio}">
+              <div class="detail-placeholder">${img.label}</div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      function openDetail(artId) {
+        const data = ARTWORKS[artId];
+        if (!data) return;
+
+        // save scroll and freeze body, so when closing you return to exact position
+        savedScrollY = window.scrollY;
+        document.body.classList.add('modal-open');
+        document.body.style.top = `-${savedScrollY}px`;
+
+        detailMeta.textContent = `${data.title} • ${data.material} • ${data.size}`;
+        detailDesc.textContent = data.description;
+        renderDetailImages(data.images);
+
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+      }
+
+      function closeDetail() {
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+
+        // wait for close animation to finish, then restore scroll state
+        window.setTimeout(() => {
+          document.body.classList.remove('modal-open');
+          const top = document.body.style.top;
+          document.body.style.top = '';
+          const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+          window.scrollTo(0, restoreY);
+        }, 350);
+      }
+
+      // Click any artwork -> open overlay
+      document.addEventListener('click', (e) => {
+        const card = e.target.closest('.work-card[data-artwork]');
+        if (!card) return;
+
+        e.preventDefault();
+        openDetail(card.getAttribute('data-artwork'));
+      });
+
+      closeBtn.addEventListener('click', closeDetail);
+
+      // ESC closes overlay
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeDetail();
+      });
+
+      // initialize observers after DOM load
+      window.addEventListener('DOMContentLoaded', () => {
+        setupYearObserver();
+      });
     })();
   </script>
 </body>
