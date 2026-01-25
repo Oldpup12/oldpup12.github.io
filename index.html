@@ -704,319 +704,347 @@
   </section>
 
   <script>
-    (function () {
-      // ----------------------------
-      // Router
-      // ----------------------------
-      const views = ['home', 'work', 'about', 'contact'];
-      const links = {
-        home: document.querySelector('.link-home'),
-        work: document.querySelector('.link-work'),
-        about: document.querySelector('.link-about'),
-        contact: document.querySelector('.link-contact'),
-      };
+  (function () {
+    // ----------------------------
+    // Router
+    // ----------------------------
+    const views = ['home', 'work', 'about', 'contact'];
+    const links = {
+      home: document.querySelector('.link-home'),
+      work: document.querySelector('.link-work'),
+      about: document.querySelector('.link-about'),
+      contact: document.querySelector('.link-contact'),
+    };
 
-      function setActiveLink(view) {
-        Object.keys(links).forEach(key => {
-          links[key].classList.toggle('active', view === key);
-          links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+    function setActiveLink(view) {
+      Object.keys(links).forEach(key => {
+        if (!links[key]) return;
+        links[key].classList.toggle('active', view === key);
+        links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+      });
+    }
+
+    function showView(view) {
+      window.scrollTo(0, 0);
+
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (!el) return;
+
+        el.classList.toggle('active', v === view);
+
+        if (v === view) {
+          el.classList.remove('animate');
+          void el.offsetWidth;
+          el.classList.add('animate');
+        } else {
+          el.classList.remove('animate');
+        }
+      });
+
+      setActiveLink(view);
+
+      if (view === 'work') {
+        requestAnimationFrame(() => {
+          setupYearObserver();
+          setupAllWorkMasonryOnce();
+          updateAllTimelineLineStarts();
         });
       }
+    }
 
-      function showView(view) {
-        window.scrollTo(0, 0);
+    function route() {
+      const hash = (location.hash || '').replace('#', '').toLowerCase();
+      showView(views.includes(hash) ? hash : 'home');
+    }
 
-        views.forEach(v => {
-          const el = document.getElementById(v);
-          if (!el) return;
-          el.classList.toggle('active', v === view);
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', route);
 
-          if (v === view) {
-            el.classList.remove('animate');
-            void el.offsetWidth;
-            el.classList.add('animate');
-          } else {
-            el.classList.remove('animate');
+    // ----------------------------
+    // Work: animate each year on scroll
+    // ----------------------------
+    let yearObserver = null;
+
+    function setupYearObserver() {
+      const years = document.querySelectorAll('.work-year');
+      if (!years.length) return;
+
+      if (yearObserver) yearObserver.disconnect();
+
+      yearObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            yearObserver.unobserve(entry.target);
           }
         });
+      }, { threshold: 0.12, rootMargin: '0px 0px -12% 0px' });
 
-        setActiveLink(view);
+      years.forEach(y => yearObserver.observe(y));
+    }
 
-        if (view === 'work') {
-          requestAnimationFrame(() => {
-            setupYearObserver();
-            setupAllMasonry();
-            updateAllTimelineLineStarts();
-          });
-        }
-      }
+    // ----------------------------
+    // Masonry (FIXED): apply once, never clears out items accidentally
+    // ----------------------------
+    function applyMasonryOnce(container) {
+      if (!container) return;
+      if (container.dataset.masonryApplied === 'true') return;
 
-      function route() {
-        const hash = (location.hash || '').replace('#', '').toLowerCase();
-        if (views.includes(hash)) showView(hash);
-        else showView('home');
-      }
+      // Collect original items BEFORE we rewrite the container
+      const items = Array.from(container.children);
 
-      window.addEventListener('hashchange', route);
-      window.addEventListener('DOMContentLoaded', route);
+      const colA = document.createElement('div');
+      const colB = document.createElement('div');
+      colA.className = 'masonry-col';
+      colB.className = 'masonry-col';
+      colA.setAttribute('data-col', '0');
+      colB.setAttribute('data-col', '1');
 
-      // ----------------------------
-      // Work: animate each year on scroll
-      // ----------------------------
-      let yearObserver = null;
+      container.innerHTML = '';
+      container.appendChild(colA);
+      container.appendChild(colB);
 
-      function setupYearObserver() {
-        const years = document.querySelectorAll('.work-year');
-        if (!years.length) return;
-
-        if (yearObserver) yearObserver.disconnect();
-
-        yearObserver = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('in-view');
-              yearObserver.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.12, rootMargin: '0px 0px -12% 0px' });
-
-        years.forEach(y => yearObserver.observe(y));
-      }
-
-      // ----------------------------
-      // Masonry: split direct children into 2 columns alternating
-      // ----------------------------
-      function applyMasonry(container) {
-        if (!container) return;
-
-        // If already has columns, keep them and just refill
-        let colA = container.querySelector('.masonry-col[data-col="0"]');
-        let colB = container.querySelector('.masonry-col[data-col="1"]');
-
-        // collect items that are NOT masonry columns (i.e., the cards/media blocks)
-        const items = Array.from(container.children).filter(el => !el.classList.contains('masonry-col'));
-
-        // first-time: create columns
-        if (!colA || !colB) {
-          container.innerHTML = '';
-          colA = document.createElement('div');
-          colB = document.createElement('div');
-          colA.className = 'masonry-col';
-          colB.className = 'masonry-col';
-          colA.setAttribute('data-col', '0');
-          colB.setAttribute('data-col', '1');
-          container.appendChild(colA);
-          container.appendChild(colB);
-        } else {
-          colA.innerHTML = '';
-          colB.innerHTML = '';
-        }
-
-        items.forEach((item, i) => {
-          (i % 2 === 0 ? colA : colB).appendChild(item);
-        });
-      }
-
-      function setupAllMasonry() {
-        // Work page grids
-        document.querySelectorAll('.work-grid.masonry-2col').forEach(applyMasonry);
-      }
-
-      // ----------------------------
-      // Timeline: ensure line always starts below sticky year label (no overlap, no background)
-      // ----------------------------
-      function updateTimelineLineStartForCell(cell) {
-        const label = cell.querySelector('.work-year-label');
-        if (!label) return;
-
-        const cellRect = cell.getBoundingClientRect();
-        const labelRect = label.getBoundingClientRect();
-
-        // start line slightly below label
-        const start = Math.max(0, (labelRect.bottom - cellRect.top) + 10);
-        cell.style.setProperty('--line-start', start + 'px');
-      }
-
-      function updateAllTimelineLineStarts() {
-        document.querySelectorAll('.work-timeline-cell').forEach(updateTimelineLineStartForCell);
-      }
-
-      window.addEventListener('scroll', () => {
-        // only do work if Work view is active
-        const workView = document.getElementById('work');
-        if (!workView || !workView.classList.contains('active')) return;
-        updateAllTimelineLineStarts();
-      }, { passive: true });
-
-      window.addEventListener('resize', () => {
-        const workView = document.getElementById('work');
-        if (!workView || !workView.classList.contains('active')) return;
-        updateAllTimelineLineStarts();
+      items.forEach((item, i) => {
+        (i % 2 === 0 ? colA : colB).appendChild(item);
       });
 
-      // ----------------------------
-      // Work: detail overlay (keeps Work scroll state)
-      // ----------------------------
-      const overlay = document.getElementById('workDetailOverlay');
-      const closeBtn = document.getElementById('detailClose');
-      const detailMeta = document.getElementById('detailMeta');
-      const detailDesc = document.getElementById('detailDesc');
-      const detailGrid = document.getElementById('detailGrid');
+      container.dataset.masonryApplied = 'true';
+    }
 
-      const ARTWORKS = {
-        "2025-1": {
-          title: "Work 1",
-          material: "Wax, felt",
-          size: "36 × 24 in",
-          description: "I am a description, and I am an art work. I am a nice artwork, so please like me.",
-          images: [
-            { ratio: "portrait", label: "Image 1 (display image)" },
-            { ratio: "portrait", label: "Image 2" },
-            { ratio: "square", label: "Image 3" },
-            { ratio: "square", label: "Image 4" },
-          ]
-        },
-        "2025-2": {
-          title: "Work 2",
-          material: "Mixed media",
-          size: "20 × 20 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "square", label: "Image 1 (display image)" },
-            { ratio: "portrait", label: "Image 2" },
-            { ratio: "landscape", label: "Image 3" },
-            { ratio: "square", label: "Image 4" },
-          ]
-        },
-        "2025-3": {
-          title: "Work 3",
-          material: "Found objects",
-          size: "30 × 22 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "landscape", label: "Image 1 (display image)" },
-            { ratio: "portrait", label: "Image 2" },
-            { ratio: "portrait", label: "Image 3" },
-            { ratio: "wide", label: "Image 4" },
-          ]
-        },
-        "2025-4": {
-          title: "Work 4",
-          material: "Plaster, pigment",
-          size: "48 × 27 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "wide", label: "Image 1 (display image)" },
-            { ratio: "square", label: "Image 2" },
-            { ratio: "landscape", label: "Image 3" },
-            { ratio: "portrait", label: "Image 4" },
-          ]
-        },
-        "2024-1": {
-          title: "Work 1",
-          material: "Mixed media",
-          size: "40 × 28 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "portrait", label: "Image 1 (display image)" },
-            { ratio: "portrait", label: "Image 2" },
-            { ratio: "square", label: "Image 3" },
-            { ratio: "landscape", label: "Image 4" },
-          ]
-        },
-        "2024-2": {
-          title: "Work 2",
-          material: "Wax",
-          size: "32 × 18 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "landscape", label: "Image 1 (display image)" },
-            { ratio: "wide", label: "Image 2" },
-            { ratio: "portrait", label: "Image 3" },
-            { ratio: "square", label: "Image 4" },
-          ]
-        },
-        "2024-3": {
-          title: "Work 3",
-          material: "Felt, thread",
-          size: "24 × 24 in",
-          description: "This is a placeholder description that you can replace later.",
-          images: [
-            { ratio: "square", label: "Image 1 (display image)" },
-            { ratio: "square", label: "Image 2" },
-            { ratio: "portrait", label: "Image 3" },
-            { ratio: "landscape", label: "Image 4" },
-          ]
-        }
-      };
+    function setupAllWorkMasonryOnce() {
+      document.querySelectorAll('.work-grid.masonry-2col').forEach(applyMasonryOnce);
+    }
 
-      let savedScrollY = 0;
+    // For detail grid we re-render each time, so we use a "rebuild" version:
+    function applyMasonryRebuild(container) {
+      if (!container) return;
 
-      function renderDetailImages(images) {
-        // Put all images as direct children; applyMasonry() will split into columns
-        detailGrid.innerHTML = images.map(img => {
-          return `
-            <div class="detail-media ${img.ratio}">
-              <div class="detail-placeholder">${img.label}</div>
-            </div>
-          `;
-        }).join('');
+      // If already has columns, pull items out of them first
+      const existingCols = Array.from(container.querySelectorAll(':scope > .masonry-col'));
+      let items = [];
 
-        applyMasonry(detailGrid);
+      if (existingCols.length) {
+        existingCols.forEach(col => items.push(...Array.from(col.children)));
+      } else {
+        items = Array.from(container.children);
       }
 
-      function openDetail(artId) {
-        const data = ARTWORKS[artId];
-        if (!data) return;
+      const colA = document.createElement('div');
+      const colB = document.createElement('div');
+      colA.className = 'masonry-col';
+      colB.className = 'masonry-col';
+      colA.setAttribute('data-col', '0');
+      colB.setAttribute('data-col', '1');
 
-        savedScrollY = window.scrollY;
-        document.body.classList.add('modal-open');
-        document.body.style.top = `-${savedScrollY}px`;
+      container.innerHTML = '';
+      container.appendChild(colA);
+      container.appendChild(colB);
 
-        // reset overlay scroll to top so header is visible
-        overlay.scrollTop = 0;
+      items.forEach((item, i) => {
+        (i % 2 === 0 ? colA : colB).appendChild(item);
+      });
+    }
 
-        detailMeta.textContent = `${data.title} • ${data.material} • ${data.size}`;
-        detailDesc.textContent = data.description;
-        renderDetailImages(data.images);
+    // ----------------------------
+    // Timeline: line starts below sticky year label
+    // ----------------------------
+    function updateTimelineLineStartForCell(cell) {
+      const label = cell.querySelector('.work-year-label');
+      if (!label) return;
 
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
+      const cellRect = cell.getBoundingClientRect();
+      const labelRect = label.getBoundingClientRect();
+
+      const start = Math.max(0, (labelRect.bottom - cellRect.top) + 10);
+      cell.style.setProperty('--line-start', start + 'px');
+    }
+
+    function updateAllTimelineLineStarts() {
+      document.querySelectorAll('.work-timeline-cell').forEach(updateTimelineLineStartForCell);
+    }
+
+    window.addEventListener('scroll', () => {
+      const workView = document.getElementById('work');
+      if (!workView || !workView.classList.contains('active')) return;
+      updateAllTimelineLineStarts();
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      const workView = document.getElementById('work');
+      if (!workView || !workView.classList.contains('active')) return;
+      updateAllTimelineLineStarts();
+    });
+
+    // ----------------------------
+    // Work: detail overlay (keeps Work scroll state)
+    // ----------------------------
+    const overlay = document.getElementById('workDetailOverlay');
+    const closeBtn = document.getElementById('detailClose');
+    const detailMeta = document.getElementById('detailMeta');
+    const detailDesc = document.getElementById('detailDesc');
+    const detailGrid = document.getElementById('detailGrid');
+
+    const ARTWORKS = {
+      "2025-1": {
+        title: "Work 1",
+        material: "Wax, felt",
+        size: "36 × 24 in",
+        description: "I am a description, and I am an art work. I am a nice artwork, so please like me.",
+        images: [
+          { ratio: "portrait", label: "Image 1 (display image)" },
+          { ratio: "portrait", label: "Image 2" },
+          { ratio: "square", label: "Image 3" },
+          { ratio: "square", label: "Image 4" },
+        ]
+      },
+      "2025-2": {
+        title: "Work 2",
+        material: "Mixed media",
+        size: "20 × 20 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "square", label: "Image 1 (display image)" },
+          { ratio: "portrait", label: "Image 2" },
+          { ratio: "landscape", label: "Image 3" },
+          { ratio: "square", label: "Image 4" },
+        ]
+      },
+      "2025-3": {
+        title: "Work 3",
+        material: "Found objects",
+        size: "30 × 22 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "landscape", label: "Image 1 (display image)" },
+          { ratio: "portrait", label: "Image 2" },
+          { ratio: "portrait", label: "Image 3" },
+          { ratio: "wide", label: "Image 4" },
+        ]
+      },
+      "2025-4": {
+        title: "Work 4",
+        material: "Plaster, pigment",
+        size: "48 × 27 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "wide", label: "Image 1 (display image)" },
+          { ratio: "square", label: "Image 2" },
+          { ratio: "landscape", label: "Image 3" },
+          { ratio: "portrait", label: "Image 4" },
+        ]
+      },
+      "2024-1": {
+        title: "Work 1",
+        material: "Mixed media",
+        size: "40 × 28 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "portrait", label: "Image 1 (display image)" },
+          { ratio: "portrait", label: "Image 2" },
+          { ratio: "square", label: "Image 3" },
+          { ratio: "landscape", label: "Image 4" },
+        ]
+      },
+      "2024-2": {
+        title: "Work 2",
+        material: "Wax",
+        size: "32 × 18 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "landscape", label: "Image 1 (display image)" },
+          { ratio: "wide", label: "Image 2" },
+          { ratio: "portrait", label: "Image 3" },
+          { ratio: "square", label: "Image 4" },
+        ]
+      },
+      "2024-3": {
+        title: "Work 3",
+        material: "Felt, thread",
+        size: "24 × 24 in",
+        description: "This is a placeholder description that you can replace later.",
+        images: [
+          { ratio: "square", label: "Image 1 (display image)" },
+          { ratio: "square", label: "Image 2" },
+          { ratio: "portrait", label: "Image 3" },
+          { ratio: "landscape", label: "Image 4" },
+        ]
       }
+    };
 
-      function closeDetail() {
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
+    let savedScrollY = 0;
 
-        window.setTimeout(() => {
-          document.body.classList.remove('modal-open');
-          const top = document.body.style.top;
-          document.body.style.top = '';
-          const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
-          window.scrollTo(0, restoreY);
-        }, 350);
-      }
+    function renderDetailImages(images) {
+      if (!detailGrid) return;
 
-      document.addEventListener('click', (e) => {
-        const card = e.target.closest('.work-card[data-artwork]');
-        if (!card) return;
-        e.preventDefault();
-        openDetail(card.getAttribute('data-artwork'));
-      });
+      // Render as plain items first...
+      detailGrid.innerHTML = images.map(img => {
+        return `
+          <div class="detail-media ${img.ratio}">
+            <div class="detail-placeholder">${img.label}</div>
+          </div>
+        `;
+      }).join('');
 
-      closeBtn.addEventListener('click', closeDetail);
+      // ...then split into 2 stacking columns
+      applyMasonryRebuild(detailGrid);
+    }
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && overlay.classList.contains('open')) closeDetail();
-      });
+    function openDetail(artId) {
+      const data = ARTWORKS[artId];
+      if (!data || !overlay) return;
 
-      // Initial setup
-      window.addEventListener('DOMContentLoaded', () => {
-        setupYearObserver();
-        setupAllMasonry();
-        updateAllTimelineLineStarts();
-      });
-    })();
-  </script>
+      savedScrollY = window.scrollY;
+      document.body.classList.add('modal-open');
+      document.body.style.top = `-${savedScrollY}px`;
+
+      overlay.scrollTop = 0; // important: allow scrolling from top of overlay
+
+      if (detailMeta) detailMeta.textContent = `${data.title} • ${data.material} • ${data.size}`;
+      if (detailDesc) detailDesc.textContent = data.description;
+      renderDetailImages(data.images);
+
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetail() {
+      if (!overlay) return;
+
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      window.setTimeout(() => {
+        document.body.classList.remove('modal-open');
+        const top = document.body.style.top;
+        document.body.style.top = '';
+        const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+        window.scrollTo(0, restoreY);
+      }, 350);
+    }
+
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.work-card[data-artwork]');
+      if (!card) return;
+
+      e.preventDefault();
+      openDetail(card.getAttribute('data-artwork'));
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDetail);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) closeDetail();
+    });
+
+    // Initial setup
+    window.addEventListener('DOMContentLoaded', () => {
+      setupYearObserver();
+      setupAllWorkMasonryOnce();
+      updateAllTimelineLineStarts();
+    });
+  })();
+</script>
+
 </body>
 </html>
