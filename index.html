@@ -192,73 +192,90 @@
     }
 
     /* Each year block: timeline column + artwork grid column */
-    .work-year {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 3rem;
-      align-items: start;
+  .work-year{
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 3rem;
+    align-items: start;
 
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-    .work-year.in-view {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* fade only (no transform) so sticky works reliably */
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .work-year.in-view{
+    opacity: 1;
+  }
 
     /* Timeline: year label ABOVE the line */
-    .work-timeline-cell {
-      position: relative;
-      min-height: 100%;
-      display: flex;
-      justify-content: center; /* centers label + line */
-    }
+.work-timeline-cell{
+  position: relative;
+  align-self: stretch;      /* IMPORTANT: makes the line full-height */
+  min-height: 100%;         /* keeps the pseudo-element tall */
+  display: flex;
+  justify-content: center;  /* centers label and line */
+}
 
-    .work-year-label {
-      position: sticky;
-      top: 5.75rem;            /* below fixed nav */
-      font-size: 1.75rem;      /* bigger */
-      letter-spacing: 0.6px;
-      opacity: 0.94;
-      line-height: 1.1;
+/* sticky year label */
+.work-year-label{
+  position: -webkit-sticky;
+  position: sticky;
+  top: 5.75rem;
+  z-index: 2;
 
-      /* IMPORTANT: no visible background */
-      background: transparent;
-      padding: 0;
-      border-radius: 0;
-      z-index: 2;
-      display: inline-block;
-      text-align: center;
-    }
+  font-size: 1.75rem;
+  letter-spacing: 0.6px;
+  opacity: 0.94;
+  line-height: 1.1;
+  text-align: center;
 
-    /* The vertical line starts BELOW the sticky label (JS sets --line-start) */
-    .work-timeline-cell::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      top: var(--line-start, 3.2rem);
-      bottom: 0;
-      width: 2px;
-      background: rgba(255,255,255,0.25);
-      border-radius: 2px;
-      z-index: 0;
-    }
+  /* no visible background */
+  background: transparent;
+}
 
-    /* ---- Masonry (2 columns, stacked independently) ---- */
-    .masonry-2col {
-      display: flex;
-      gap: 2rem;
-      align-items: flex-start;
-    }
-    .masonry-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      min-width: 0;
-    }
+/* vertical line under label (JS sets --line-start so it NEVER overlaps label) */
+.work-timeline-cell::before{
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: var(--line-start, 3rem);
+  bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 2px;
+  z-index: 0;
+}
+
+
+/* Masonry (desktop) */
+.masonry-2col{
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+}
+.masonry-col{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  min-width: 0;
+}
+
+/* Mobile: single column list */
+@media (max-width: 768px){
+  .masonry-2col{
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .masonry-col{
+    gap: 1.25rem;
+  }
+
+  .work-year{ grid-template-columns: 98px 1fr; gap: 1.25rem; }
+  .work-year-label{ top: 6.25rem; font-size: 1.35rem; }
+}
+
 
     /* Work cards */
     .work-card { display: block; color: inherit; text-decoration: none; }
@@ -703,7 +720,7 @@
     </div>
   </section>
 
-  <script>
+<script>
   (function () {
     // ----------------------------
     // Router
@@ -787,94 +804,107 @@
     // ----------------------------
     // Masonry (FIXED): apply once, never clears out items accidentally
     // ----------------------------
-    function applyMasonryOnce(container) {
-      if (!container) return;
-      if (container.dataset.masonryApplied === 'true') return;
+const mqMobile = window.matchMedia('(max-width: 768px)');
 
-      // Collect original items BEFORE we rewrite the container
-      const items = Array.from(container.children);
+function collectMasonryItems(container){
+  // if columns exist, pull items out in alternating order (col0 item0, col1 item0, col0 item1, col1 item1...)
+  const cols = Array.from(container.querySelectorAll(':scope > .masonry-col'));
+  if (!cols.length) return Array.from(container.children);
 
-      const colA = document.createElement('div');
-      const colB = document.createElement('div');
-      colA.className = 'masonry-col';
-      colB.className = 'masonry-col';
-      colA.setAttribute('data-col', '0');
-      colB.setAttribute('data-col', '1');
+  const a = Array.from(cols[0].children);
+  const b = Array.from(cols[1]?.children || []);
+  const merged = [];
+  const n = Math.max(a.length, b.length);
+  for (let i = 0; i < n; i++){
+    if (a[i]) merged.push(a[i]);
+    if (b[i]) merged.push(b[i]);
+  }
+  return merged;
+}
 
-      container.innerHTML = '';
-      container.appendChild(colA);
-      container.appendChild(colB);
+function relayoutMasonry(container){
+  if (!container) return;
 
-      items.forEach((item, i) => {
-        (i % 2 === 0 ? colA : colB).appendChild(item);
-      });
+  const items = collectMasonryItems(container);
 
-      container.dataset.masonryApplied = 'true';
-    }
+  // clear container
+  container.innerHTML = '';
 
-    function setupAllWorkMasonryOnce() {
-      document.querySelectorAll('.work-grid.masonry-2col').forEach(applyMasonryOnce);
-    }
+  if (mqMobile.matches){
+    // MOBILE: single column list
+    items.forEach(item => container.appendChild(item));
+    return;
+  }
 
-    // For detail grid we re-render each time, so we use a "rebuild" version:
-    function applyMasonryRebuild(container) {
-      if (!container) return;
+  // DESKTOP: 2 columns, alternating
+  const colA = document.createElement('div');
+  const colB = document.createElement('div');
+  colA.className = 'masonry-col';
+  colB.className = 'masonry-col';
+  colA.setAttribute('data-col', '0');
+  colB.setAttribute('data-col', '1');
 
-      // If already has columns, pull items out of them first
-      const existingCols = Array.from(container.querySelectorAll(':scope > .masonry-col'));
-      let items = [];
+  container.appendChild(colA);
+  container.appendChild(colB);
 
-      if (existingCols.length) {
-        existingCols.forEach(col => items.push(...Array.from(col.children)));
-      } else {
-        items = Array.from(container.children);
-      }
+  items.forEach((item, i) => {
+    (i % 2 === 0 ? colA : colB).appendChild(item);
+  });
+}
 
-      const colA = document.createElement('div');
-      const colB = document.createElement('div');
-      colA.className = 'masonry-col';
-      colB.className = 'masonry-col';
-      colA.setAttribute('data-col', '0');
-      colB.setAttribute('data-col', '1');
-
-      container.innerHTML = '';
-      container.appendChild(colA);
-      container.appendChild(colB);
-
-      items.forEach((item, i) => {
-        (i % 2 === 0 ? colA : colB).appendChild(item);
-      });
-    }
+function relayoutAllWorkMasonry(){
+  document.querySelectorAll('.work-grid.masonry-2col').forEach(relayoutMasonry);
+}
 
     // ----------------------------
     // Timeline: line starts below sticky year label
     // ----------------------------
-    function updateTimelineLineStartForCell(cell) {
-      const label = cell.querySelector('.work-year-label');
-      if (!label) return;
+// ----------------------------
+// Timeline: line starts below sticky label (no overlap, no background needed)
+// Also fixes "no line" by ensuring height + recalculating on scroll
+// ----------------------------
+function updateTimelineLineStartForCell(cell){
+  const label = cell.querySelector('.work-year-label');
+  if (!label) return;
 
-      const cellRect = cell.getBoundingClientRect();
-      const labelRect = label.getBoundingClientRect();
+  const cellRect = cell.getBoundingClientRect();
+  const labelRect = label.getBoundingClientRect();
 
-      const start = Math.max(0, (labelRect.bottom - cellRect.top) + 10);
-      cell.style.setProperty('--line-start', start + 'px');
-    }
+  // start line a little below the label bottom
+  const start = Math.max(0, (labelRect.bottom - cellRect.top) + 10);
+  cell.style.setProperty('--line-start', start + 'px');
+}
 
-    function updateAllTimelineLineStarts() {
-      document.querySelectorAll('.work-timeline-cell').forEach(updateTimelineLineStartForCell);
-    }
+function updateAllTimelineLineStarts(){
+  document.querySelectorAll('.work-timeline-cell').forEach(updateTimelineLineStartForCell);
+}
 
-    window.addEventListener('scroll', () => {
-      const workView = document.getElementById('work');
-      if (!workView || !workView.classList.contains('active')) return;
-      updateAllTimelineLineStarts();
-    }, { passive: true });
+// Call after DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  relayoutAllWorkMasonry();
+  updateAllTimelineLineStarts();
+});
 
-    window.addEventListener('resize', () => {
-      const workView = document.getElementById('work');
-      if (!workView || !workView.classList.contains('active')) return;
-      updateAllTimelineLineStarts();
-    });
+// Re-layout when screen size changes (desktop <-> mobile)
+mqMobile.addEventListener('change', () => {
+  relayoutAllWorkMasonry();
+  updateAllTimelineLineStarts();
+});
+
+// Keep line correctly under sticky label while scrolling
+window.addEventListener('scroll', () => {
+  const workView = document.getElementById('work');
+  if (!workView || !workView.classList.contains('active')) return;
+  updateAllTimelineLineStarts();
+}, { passive: true });
+
+window.addEventListener('resize', () => {
+  const workView = document.getElementById('work');
+  if (!workView || !workView.classList.contains('active')) return;
+  relayoutAllWorkMasonry();
+  updateAllTimelineLineStarts();
+});
+
 
     // ----------------------------
     // Work: detail overlay (keeps Work scroll state)
@@ -987,7 +1017,7 @@
       }).join('');
 
       // ...then split into 2 stacking columns
-      applyMasonryRebuild(detailGrid);
+      relayoutMasonry(detailGrid);
     }
 
     function openDetail(artId) {
@@ -1045,6 +1075,7 @@
     });
   })();
 </script>
+
 
 </body>
 </html>
