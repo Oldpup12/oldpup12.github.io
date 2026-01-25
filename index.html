@@ -173,158 +173,144 @@
     .contact-center .contact a img { width: 28px; height: 28px; }
     .contact-center .contact a img.email-icon { width: 24px; height: 24px; }
 
-    /* ---- WORK Page ---- */
-    .main.work {
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 2rem;
-      padding-top: 6rem;
-      padding-bottom: 2rem;
-    }
-    #work .section-title { margin-top: 0.2rem; }
+/* ---- WORK Page ---- */
+.main.work {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2rem;
+  padding-top: 6rem;
+  padding-bottom: 2rem;
+}
+#work .section-title { margin-top: 0.2rem; }
 
-    .work-wrapper {
-      width: min(1100px, 92vw);
-      display: flex;
-      flex-direction: column;
-      gap: 3rem;
-    }
-
-    /* Each year block: timeline column + artwork grid column */
-  .work-year{
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: 3rem;
-    align-items: start;
-
-    /* fade only (no transform) so sticky works reliably */
-    opacity: 0;
-    transition: opacity 0.8s ease;
-  }
-  .work-year.in-view{
-    opacity: 1;
-  }
-
-    /* Timeline: year label ABOVE the line */
-.work-timeline-cell{
-  position: relative;
-  align-self: stretch;      /* IMPORTANT: makes the line full-height */
-  min-height: 100%;         /* keeps the pseudo-element tall */
+.work-wrapper {
+  width: min(1100px, 92vw);
   display: flex;
-  justify-content: center;  /* centers label and line */
+  flex-direction: column;
+  gap: 4rem;
 }
 
-/* sticky year label */
-.work-year-label{
-  position: -webkit-sticky;
+/* Year block: left timeline, right artworks */
+.work-year {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 3rem;
+  align-items: start;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.work-year.in-view { opacity: 1; }
+
+/* Timeline column */
+.work-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sticky year label */
+.work-year-label {
   position: sticky;
   top: 5.75rem;
   z-index: 2;
-
   font-size: 1.75rem;
   letter-spacing: 0.6px;
   opacity: 0.94;
-  line-height: 1.1;
+  line-height: 1.2;
   text-align: center;
-
-  /* no visible background */
-  background: transparent;
+  padding-bottom: 1rem;
 }
 
-/* vertical line under label (JS sets --line-start so it NEVER overlaps label) */
-.work-timeline-cell::before{
-  content: "";
+/* Vertical line below year (grows with content height) */
+.work-timeline-line {
   position: absolute;
+  top: 3.5rem;
+  bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  top: var(--line-start, 3rem);
-  bottom: 0;
   width: 2px;
   background: rgba(255,255,255,0.25);
   border-radius: 2px;
-  z-index: 0;
 }
 
-
-/* Masonry (desktop) */
-.masonry-2col{
-  display: flex;
+/* Artworks grid: 2 columns desktop, 1 mobile */
+.work-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
-  align-items: flex-start;
-}
-.masonry-col{
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  min-width: 0;
 }
 
-/* Mobile: single column list */
-@media (max-width: 768px){
-  .masonry-2col{
-    display: flex;
-    flex-direction: column;
+.work-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.work-media {
+  background: #222;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+  transition: transform 0.6s ease;
+}
+.work-card:hover .work-media { transform: scale(1.05); }
+
+.work-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.work-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,0.55);
+  font-size: 1.05rem;
+  letter-spacing: 0.4px;
+  text-align: center;
+  padding: 1rem;
+}
+
+.work-size {
+  position: absolute;
+  right: 0.85rem;
+  bottom: 0.75rem;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  background: rgba(0,0,0,0.35);
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.55rem;
+  backdrop-filter: blur(4px);
+}
+
+.portrait { aspect-ratio: 3 / 4; }
+.square { aspect-ratio: 1 / 1; }
+.landscape { aspect-ratio: 4 / 3; }
+.wide { aspect-ratio: 16 / 9; }
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .work-year {
+    grid-template-columns: 80px 1fr;
+    gap: 1.5rem;
+  }
+  .work-year-label {
+    top: 6.25rem;
+    font-size: 1.35rem;
+  }
+  .work-timeline-line { top: 2.8rem; }
+  .work-grid {
+    grid-template-columns: 1fr;
     gap: 1.25rem;
   }
-  .masonry-col{
-    gap: 1.25rem;
-  }
-
-  .work-year{ grid-template-columns: 98px 1fr; gap: 1.25rem; }
-  .work-year-label{ top: 6.25rem; font-size: 1.35rem; }
 }
-
-
-    /* Work cards */
-    .work-card { display: block; color: inherit; text-decoration: none; }
-    .work-media {
-      background: #222;
-      border-radius: 1rem;
-      overflow: hidden;
-      position: relative;
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
-      transition: transform 0.6s ease;
-    }
-    .work-card:hover .work-media { transform: scale(1.05); }
-
-    .work-media img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-    .work-placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: rgba(255,255,255,0.55);
-      font-size: 1.05rem;
-      letter-spacing: 0.4px;
-      text-align: center;
-      padding: 1rem;
-    }
-    .work-size {
-      position: absolute;
-      right: 0.85rem;
-      bottom: 0.75rem;
-      font-size: 0.9rem;
-      opacity: 0.9;
-      background: rgba(0,0,0,0.35);
-      padding: 0.2rem 0.45rem;
-      border-radius: 0.55rem;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    /* Simple aspect ratio helpers */
-    .portrait { aspect-ratio: 3 / 4; }
-    .square { aspect-ratio: 1 / 1; }
-    .landscape { aspect-ratio: 4 / 3; }
-    .wide { aspect-ratio: 16 / 9; }
 
     /* ---- Artwork detail overlay ---- */
     .work-detail-overlay {
@@ -551,121 +537,117 @@
     </div>
   </section>
 
-  <!-- WORK -->
-  <section id="work" class="view" aria-labelledby="work-title">
-    <div class="container">
-      <div class="main work">
-        <h2 class="section-title" id="work-title">Work</h2>
+<!-- WORK -->
+<section id="work" class="view" aria-labelledby="work-title">
+  <div class="container">
+    <div class="main work">
+      <h2 class="section-title" id="work-title">Work</h2>
 
-        <div class="work-wrapper" aria-label="Portfolio timeline">
-          <!-- 2025 -->
-          <div class="work-year" data-year="2025">
-            <div class="work-timeline-cell" aria-hidden="true">
-              <div class="work-year-label">2025</div>
-            </div>
-
-            <!-- masonry container: items start as direct children, JS will split into 2 columns -->
-            <div class="masonry-2col work-grid" data-masonry="work-2025">
-              <!-- cards (source items; JS will move them into columns) -->
-              <a class="work-card" href="#" data-artwork="2025-1" aria-label="Open artwork: 2025 work 1">
-                <div class="work-media portrait">
-                  <div class="work-placeholder">Artwork 1 (placeholder)</div>
-                  <div class="work-size">36 × 24 in</div>
-                </div>
-              </a>
-
-              <a class="work-card" href="#" data-artwork="2025-2" aria-label="Open artwork: 2025 work 2">
-                <div class="work-media square">
-                  <div class="work-placeholder">Artwork 2 (placeholder)</div>
-                  <div class="work-size">20 × 20 in</div>
-                </div>
-              </a>
-
-              <a class="work-card" href="#" data-artwork="2025-3" aria-label="Open artwork: 2025 work 3">
-                <div class="work-media landscape">
-                  <div class="work-placeholder">Artwork 3 (placeholder)</div>
-                  <div class="work-size">30 × 22 in</div>
-                </div>
-              </a>
-
-              <a class="work-card" href="#" data-artwork="2025-4" aria-label="Open artwork: 2025 work 4">
-                <div class="work-media wide">
-                  <div class="work-placeholder">Artwork 4 (placeholder)</div>
-                  <div class="work-size">48 × 27 in</div>
-                </div>
-              </a>
-            </div>
+      <div class="work-wrapper">
+        <!-- 2025 -->
+        <div class="work-year">
+          <div class="work-timeline">
+            <div class="work-year-label">2025</div>
+            <div class="work-timeline-line"></div>
           </div>
 
-          <!-- 2024 -->
-          <div class="work-year" data-year="2024">
-            <div class="work-timeline-cell" aria-hidden="true">
-              <div class="work-year-label">2024</div>
-            </div>
+          <div class="work-grid">
+            <a class="work-card" href="#" data-artwork="2025-1">
+              <div class="work-media portrait">
+                <div class="work-placeholder">Artwork 1 (placeholder)</div>
+                <div class="work-size">36 × 24 in</div>
+              </div>
+            </a>
 
-            <div class="masonry-2col work-grid" data-masonry="work-2024">
-              <a class="work-card" href="#" data-artwork="2024-1" aria-label="Open artwork: 2024 work 1">
-                <div class="work-media portrait">
-                  <div class="work-placeholder">Artwork 1 (placeholder)</div>
-                  <div class="work-size">40 × 28 in</div>
-                </div>
-              </a>
+            <a class="work-card" href="#" data-artwork="2025-2">
+              <div class="work-media square">
+                <div class="work-placeholder">Artwork 2 (placeholder)</div>
+                <div class="work-size">20 × 20 in</div>
+              </div>
+            </a>
 
-              <a class="work-card" href="#" data-artwork="2024-2" aria-label="Open artwork: 2024 work 2">
-                <div class="work-media landscape">
-                  <div class="work-placeholder">Artwork 2 (placeholder)</div>
-                  <div class="work-size">32 × 18 in</div>
-                </div>
-              </a>
+            <a class="work-card" href="#" data-artwork="2025-3">
+              <div class="work-media landscape">
+                <div class="work-placeholder">Artwork 3 (placeholder)</div>
+                <div class="work-size">30 × 22 in</div>
+              </div>
+            </a>
 
-              <a class="work-card" href="#" data-artwork="2024-3" aria-label="Open artwork: 2024 work 3">
-                <div class="work-media square">
-                  <div class="work-placeholder">Artwork 3 (placeholder)</div>
-                  <div class="work-size">24 × 24 in</div>
-                </div>
-              </a>
-            </div>
+            <a class="work-card" href="#" data-artwork="2025-4">
+              <div class="work-media wide">
+                <div class="work-placeholder">Artwork 4 (placeholder)</div>
+                <div class="work-size">48 × 27 in</div>
+              </div>
+            </a>
           </div>
         </div>
 
-        <!-- Artwork Detail Overlay -->
-        <div class="work-detail-overlay" id="workDetailOverlay" aria-hidden="true">
-          <div class="work-detail-panel" role="dialog" aria-modal="true" aria-label="Artwork details">
-            <div class="detail-header">
-              <div class="detail-text">
-                <div class="detail-meta" id="detailMeta">Title • Material • Size</div>
-                <div class="detail-desc" id="detailDesc">
-                  I am a description, and I am an art work. I am a nice artwork, so please like me.
-                  I was made with love and care and you should be happy about me.
-                </div>
+        <!-- 2024 -->
+        <div class="work-year">
+          <div class="work-timeline">
+            <div class="work-year-label">2024</div>
+            <div class="work-timeline-line"></div>
+          </div>
+
+          <div class="work-grid">
+            <a class="work-card" href="#" data-artwork="2024-1">
+              <div class="work-media portrait">
+                <div class="work-placeholder">Artwork 1 (placeholder)</div>
+                <div class="work-size">40 × 28 in</div>
               </div>
+            </a>
 
-              <button class="detail-close" id="detailClose" aria-label="Close artwork view">×</button>
-            </div>
+            <a class="work-card" href="#" data-artwork="2024-2">
+              <div class="work-media landscape">
+                <div class="work-placeholder">Artwork 2 (placeholder)</div>
+                <div class="work-size">32 × 18 in</div>
+              </div>
+            </a>
 
-            <!-- masonry-like detail grid (JS will split into columns) -->
-            <div class="masonry-2col" id="detailGrid" aria-label="Artwork images"></div>
+            <a class="work-card" href="#" data-artwork="2024-3">
+              <div class="work-media square">
+                <div class="work-placeholder">Artwork 3 (placeholder)</div>
+                <div class="work-size">24 × 24 in</div>
+              </div>
+            </a>
           </div>
         </div>
       </div>
 
-      <!-- Footer present on WORK as well -->
-      <div class="footer">
-        <div class="contact">
-          <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
-            <img src="images/instagram.svg" alt="Instagram" />
-            _mars_studio_
-          </a>
-        </div>
-        <div class="contact">
-          <a href="mailto:marcy.davis@tcu.edu">
-            <img src="images/email.svg" alt="Email" class="email-icon" />
-            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
-          </a>
+      <!-- Detail Overlay -->
+      <div class="work-detail-overlay" id="workDetailOverlay" aria-hidden="true">
+        <div class="work-detail-panel">
+          <div class="detail-header">
+            <div class="detail-text">
+              <div class="detail-meta" id="detailMeta">Title • Material • Size</div>
+              <div class="detail-desc" id="detailDesc">Description</div>
+            </div>
+            <button class="detail-close" id="detailClose">×</button>
+          </div>
+
+          <div id="detailGrid" class="work-grid"></div>
         </div>
       </div>
     </div>
-  </section>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="contact">
+        <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
+          <img src="images/instagram.svg" alt="Instagram" />
+          _mars_studio_
+        </a>
+      </div>
+      <div class="contact">
+        <a href="mailto:marcy.davis@tcu.edu">
+          <img src="images/email.svg" alt="Email" class="email-icon" />
+          marcy.davis@tcu.edu
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
 
   <!-- ABOUT -->
   <section id="about" class="view" aria-labelledby="about-title">
@@ -721,359 +703,234 @@
   </section>
 
 <script>
-  (function () {
-    // ----------------------------
-    // Router
-    // ----------------------------
-    const views = ['home', 'work', 'about', 'contact'];
-    const links = {
-      home: document.querySelector('.link-home'),
-      work: document.querySelector('.link-work'),
-      about: document.querySelector('.link-about'),
-      contact: document.querySelector('.link-contact'),
-    };
+(function () {
+  // ========== ROUTER ==========
+  const views = ['home', 'work', 'about', 'contact'];
+  const links = {
+    home: document.querySelector('.link-home'),
+    work: document.querySelector('.link-work'),
+    about: document.querySelector('.link-about'),
+    contact: document.querySelector('.link-contact'),
+  };
 
-    function setActiveLink(view) {
-      Object.keys(links).forEach(key => {
-        if (!links[key]) return;
+  function setActiveLink(view) {
+    Object.keys(links).forEach(key => {
+      if (links[key]) {
         links[key].classList.toggle('active', view === key);
         links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+      }
+    });
+  }
+
+  function showView(view) {
+    window.scrollTo(0, 0);
+
+    views.forEach(v => {
+      const el = document.getElementById(v);
+      if (!el) return;
+      el.classList.toggle('active', v === view);
+
+      if (v === view) {
+        el.classList.remove('animate');
+        void el.offsetWidth;
+        el.classList.add('animate');
+      } else {
+        el.classList.remove('animate');
+      }
+    });
+
+    setActiveLink(view);
+
+    if (view === 'work') {
+      requestAnimationFrame(() => {
+        animateYearsOnScroll();
       });
     }
+  }
 
-    function showView(view) {
-      window.scrollTo(0, 0);
+  function route() {
+    const hash = (location.hash || '').replace('#', '').toLowerCase();
+    showView(views.includes(hash) ? hash : 'home');
+  }
 
-      views.forEach(v => {
-        const el = document.getElementById(v);
-        if (!el) return;
+  window.addEventListener('hashchange', route);
+  window.addEventListener('DOMContentLoaded', route);
 
-        el.classList.toggle('active', v === view);
+  // ========== WORK: YEAR FADE-IN ON SCROLL ==========
+  let yearObserver = null;
 
-        if (v === view) {
-          el.classList.remove('animate');
-          void el.offsetWidth;
-          el.classList.add('animate');
-        } else {
-          el.classList.remove('animate');
+  function animateYearsOnScroll() {
+    const years = document.querySelectorAll('.work-year');
+    if (!years.length) return;
+
+    if (yearObserver) yearObserver.disconnect();
+
+    yearObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
         }
       });
+    }, { threshold: 0.15 });
 
-      setActiveLink(view);
-
-      if (view === 'work') {
-        requestAnimationFrame(() => {
-          setupYearObserver();
-          setupAllWorkMasonryOnce();
-          updateAllTimelineLineStarts();
-        });
-      }
-    }
-
-    function route() {
-      const hash = (location.hash || '').replace('#', '').toLowerCase();
-      showView(views.includes(hash) ? hash : 'home');
-    }
-
-    window.addEventListener('hashchange', route);
-    window.addEventListener('DOMContentLoaded', route);
-
-    // ----------------------------
-    // Work: animate each year on scroll
-    // ----------------------------
-    let yearObserver = null;
-
-    function setupYearObserver() {
-      const years = document.querySelectorAll('.work-year');
-      if (!years.length) return;
-
-      if (yearObserver) yearObserver.disconnect();
-
-      yearObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-            yearObserver.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -12% 0px' });
-
-      years.forEach(y => yearObserver.observe(y));
-    }
-
-    // ----------------------------
-    // Masonry (FIXED): apply once, never clears out items accidentally
-    // ----------------------------
-const mqMobile = window.matchMedia('(max-width: 768px)');
-
-function collectMasonryItems(container){
-  // if columns exist, pull items out in alternating order (col0 item0, col1 item0, col0 item1, col1 item1...)
-  const cols = Array.from(container.querySelectorAll(':scope > .masonry-col'));
-  if (!cols.length) return Array.from(container.children);
-
-  const a = Array.from(cols[0].children);
-  const b = Array.from(cols[1]?.children || []);
-  const merged = [];
-  const n = Math.max(a.length, b.length);
-  for (let i = 0; i < n; i++){
-    if (a[i]) merged.push(a[i]);
-    if (b[i]) merged.push(b[i]);
-  }
-  return merged;
-}
-
-function relayoutMasonry(container){
-  if (!container) return;
-
-  const items = collectMasonryItems(container);
-
-  // clear container
-  container.innerHTML = '';
-
-  if (mqMobile.matches){
-    // MOBILE: single column list
-    items.forEach(item => container.appendChild(item));
-    return;
+    years.forEach(y => yearObserver.observe(y));
   }
 
-  // DESKTOP: 2 columns, alternating
-  const colA = document.createElement('div');
-  const colB = document.createElement('div');
-  colA.className = 'masonry-col';
-  colB.className = 'masonry-col';
-  colA.setAttribute('data-col', '0');
-  colB.setAttribute('data-col', '1');
+  // ========== ARTWORK DETAIL OVERLAY ==========
+  const overlay = document.getElementById('workDetailOverlay');
+  const closeBtn = document.getElementById('detailClose');
+  const detailMeta = document.getElementById('detailMeta');
+  const detailDesc = document.getElementById('detailDesc');
+  const detailGrid = document.getElementById('detailGrid');
 
-  container.appendChild(colA);
-  container.appendChild(colB);
-
-  items.forEach((item, i) => {
-    (i % 2 === 0 ? colA : colB).appendChild(item);
-  });
-}
-
-function relayoutAllWorkMasonry(){
-  document.querySelectorAll('.work-grid.masonry-2col').forEach(relayoutMasonry);
-}
-
-    // ----------------------------
-    // Timeline: line starts below sticky year label
-    // ----------------------------
-// ----------------------------
-// Timeline: line starts below sticky label (no overlap, no background needed)
-// Also fixes "no line" by ensuring height + recalculating on scroll
-// ----------------------------
-function updateTimelineLineStartForCell(cell){
-  const label = cell.querySelector('.work-year-label');
-  if (!label) return;
-
-  const cellRect = cell.getBoundingClientRect();
-  const labelRect = label.getBoundingClientRect();
-
-  // start line a little below the label bottom
-  const start = Math.max(0, (labelRect.bottom - cellRect.top) + 10);
-  cell.style.setProperty('--line-start', start + 'px');
-}
-
-function updateAllTimelineLineStarts(){
-  document.querySelectorAll('.work-timeline-cell').forEach(updateTimelineLineStartForCell);
-}
-
-// Call after DOM is ready
-window.addEventListener('DOMContentLoaded', () => {
-  relayoutAllWorkMasonry();
-  updateAllTimelineLineStarts();
-});
-
-// Re-layout when screen size changes (desktop <-> mobile)
-mqMobile.addEventListener('change', () => {
-  relayoutAllWorkMasonry();
-  updateAllTimelineLineStarts();
-});
-
-// Keep line correctly under sticky label while scrolling
-window.addEventListener('scroll', () => {
-  const workView = document.getElementById('work');
-  if (!workView || !workView.classList.contains('active')) return;
-  updateAllTimelineLineStarts();
-}, { passive: true });
-
-window.addEventListener('resize', () => {
-  const workView = document.getElementById('work');
-  if (!workView || !workView.classList.contains('active')) return;
-  relayoutAllWorkMasonry();
-  updateAllTimelineLineStarts();
-});
-
-
-    // ----------------------------
-    // Work: detail overlay (keeps Work scroll state)
-    // ----------------------------
-    const overlay = document.getElementById('workDetailOverlay');
-    const closeBtn = document.getElementById('detailClose');
-    const detailMeta = document.getElementById('detailMeta');
-    const detailDesc = document.getElementById('detailDesc');
-    const detailGrid = document.getElementById('detailGrid');
-
-    const ARTWORKS = {
-      "2025-1": {
-        title: "Work 1",
-        material: "Wax, felt",
-        size: "36 × 24 in",
-        description: "I am a description, and I am an art work. I am a nice artwork, so please like me.",
-        images: [
-          { ratio: "portrait", label: "Image 1 (display image)" },
-          { ratio: "portrait", label: "Image 2" },
-          { ratio: "square", label: "Image 3" },
-          { ratio: "square", label: "Image 4" },
-        ]
-      },
-      "2025-2": {
-        title: "Work 2",
-        material: "Mixed media",
-        size: "20 × 20 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "square", label: "Image 1 (display image)" },
-          { ratio: "portrait", label: "Image 2" },
-          { ratio: "landscape", label: "Image 3" },
-          { ratio: "square", label: "Image 4" },
-        ]
-      },
-      "2025-3": {
-        title: "Work 3",
-        material: "Found objects",
-        size: "30 × 22 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "landscape", label: "Image 1 (display image)" },
-          { ratio: "portrait", label: "Image 2" },
-          { ratio: "portrait", label: "Image 3" },
-          { ratio: "wide", label: "Image 4" },
-        ]
-      },
-      "2025-4": {
-        title: "Work 4",
-        material: "Plaster, pigment",
-        size: "48 × 27 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "wide", label: "Image 1 (display image)" },
-          { ratio: "square", label: "Image 2" },
-          { ratio: "landscape", label: "Image 3" },
-          { ratio: "portrait", label: "Image 4" },
-        ]
-      },
-      "2024-1": {
-        title: "Work 1",
-        material: "Mixed media",
-        size: "40 × 28 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "portrait", label: "Image 1 (display image)" },
-          { ratio: "portrait", label: "Image 2" },
-          { ratio: "square", label: "Image 3" },
-          { ratio: "landscape", label: "Image 4" },
-        ]
-      },
-      "2024-2": {
-        title: "Work 2",
-        material: "Wax",
-        size: "32 × 18 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "landscape", label: "Image 1 (display image)" },
-          { ratio: "wide", label: "Image 2" },
-          { ratio: "portrait", label: "Image 3" },
-          { ratio: "square", label: "Image 4" },
-        ]
-      },
-      "2024-3": {
-        title: "Work 3",
-        material: "Felt, thread",
-        size: "24 × 24 in",
-        description: "This is a placeholder description that you can replace later.",
-        images: [
-          { ratio: "square", label: "Image 1 (display image)" },
-          { ratio: "square", label: "Image 2" },
-          { ratio: "portrait", label: "Image 3" },
-          { ratio: "landscape", label: "Image 4" },
-        ]
-      }
-    };
-
-    let savedScrollY = 0;
-
-    function renderDetailImages(images) {
-      if (!detailGrid) return;
-
-      // Render as plain items first...
-      detailGrid.innerHTML = images.map(img => {
-        return `
-          <div class="detail-media ${img.ratio}">
-            <div class="detail-placeholder">${img.label}</div>
-          </div>
-        `;
-      }).join('');
-
-      // ...then split into 2 stacking columns
-      relayoutMasonry(detailGrid);
+  const ARTWORKS = {
+    "2025-1": {
+      title: "Work 1",
+      material: "Wax, felt",
+      size: "36 × 24 in",
+      description: "I am a description, and I am an art work. I am a nice artwork, so please like me.",
+      images: [
+        { ratio: "portrait", label: "Image 1 (display image)" },
+        { ratio: "portrait", label: "Image 2" },
+        { ratio: "square", label: "Image 3" },
+        { ratio: "square", label: "Image 4" },
+      ]
+    },
+    "2025-2": {
+      title: "Work 2",
+      material: "Mixed media",
+      size: "20 × 20 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "square", label: "Image 1 (display image)" },
+        { ratio: "portrait", label: "Image 2" },
+        { ratio: "landscape", label: "Image 3" },
+        { ratio: "square", label: "Image 4" },
+      ]
+    },
+    "2025-3": {
+      title: "Work 3",
+      material: "Found objects",
+      size: "30 × 22 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "landscape", label: "Image 1 (display image)" },
+        { ratio: "portrait", label: "Image 2" },
+        { ratio: "portrait", label: "Image 3" },
+        { ratio: "wide", label: "Image 4" },
+      ]
+    },
+    "2025-4": {
+      title: "Work 4",
+      material: "Plaster, pigment",
+      size: "48 × 27 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "wide", label: "Image 1 (display image)" },
+        { ratio: "square", label: "Image 2" },
+        { ratio: "landscape", label: "Image 3" },
+        { ratio: "portrait", label: "Image 4" },
+      ]
+    },
+    "2024-1": {
+      title: "Work 1",
+      material: "Mixed media",
+      size: "40 × 28 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "portrait", label: "Image 1 (display image)" },
+        { ratio: "portrait", label: "Image 2" },
+        { ratio: "square", label: "Image 3" },
+        { ratio: "landscape", label: "Image 4" },
+      ]
+    },
+    "2024-2": {
+      title: "Work 2",
+      material: "Wax",
+      size: "32 × 18 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "landscape", label: "Image 1 (display image)" },
+        { ratio: "wide", label: "Image 2" },
+        { ratio: "portrait", label: "Image 3" },
+        { ratio: "square", label: "Image 4" },
+      ]
+    },
+    "2024-3": {
+      title: "Work 3",
+      material: "Felt, thread",
+      size: "24 × 24 in",
+      description: "This is a placeholder description that you can replace later.",
+      images: [
+        { ratio: "square", label: "Image 1 (display image)" },
+        { ratio: "square", label: "Image 2" },
+        { ratio: "portrait", label: "Image 3" },
+        { ratio: "landscape", label: "Image 4" },
+      ]
     }
+  };
 
-    function openDetail(artId) {
-      const data = ARTWORKS[artId];
-      if (!data || !overlay) return;
+  let savedScrollY = 0;
 
-      savedScrollY = window.scrollY;
-      document.body.classList.add('modal-open');
-      document.body.style.top = `-${savedScrollY}px`;
+  function renderDetailImages(images) {
+    if (!detailGrid) return;
 
-      overlay.scrollTop = 0; // important: allow scrolling from top of overlay
+    detailGrid.innerHTML = images.map(img => `
+      <div class="detail-media ${img.ratio}">
+        <div class="detail-placeholder">${img.label}</div>
+      </div>
+    `).join('');
+  }
 
-      if (detailMeta) detailMeta.textContent = `${data.title} • ${data.material} • ${data.size}`;
-      if (detailDesc) detailDesc.textContent = data.description;
-      renderDetailImages(data.images);
+  function openDetail(artId) {
+    const data = ARTWORKS[artId];
+    if (!data || !overlay) return;
 
-      overlay.classList.add('open');
-      overlay.setAttribute('aria-hidden', 'false');
-    }
+    savedScrollY = window.scrollY;
+    document.body.classList.add('modal-open');
+    document.body.style.top = `-${savedScrollY}px`;
 
-    function closeDetail() {
-      if (!overlay) return;
+    overlay.scrollTop = 0;
 
-      overlay.classList.remove('open');
-      overlay.setAttribute('aria-hidden', 'true');
+    if (detailMeta) detailMeta.textContent = `${data.title} • ${data.material} • ${data.size}`;
+    if (detailDesc) detailDesc.textContent = data.description;
+    renderDetailImages(data.images);
 
-      window.setTimeout(() => {
-        document.body.classList.remove('modal-open');
-        const top = document.body.style.top;
-        document.body.style.top = '';
-        const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
-        window.scrollTo(0, restoreY);
-      }, 350);
-    }
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden', 'false');
+  }
 
-    document.addEventListener('click', (e) => {
-      const card = e.target.closest('.work-card[data-artwork]');
-      if (!card) return;
+  function closeDetail() {
+    if (!overlay) return;
 
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden', 'true');
+
+    setTimeout(() => {
+      document.body.classList.remove('modal-open');
+      const top = document.body.style.top;
+      document.body.style.top = '';
+      const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+      window.scrollTo(0, restoreY);
+    }, 350);
+  }
+
+  document.addEventListener('click', (e) => {
+    const card = e.target.closest('.work-card[data-artwork]');
+    if (card) {
       e.preventDefault();
       openDetail(card.getAttribute('data-artwork'));
-    });
+    }
+  });
 
-    if (closeBtn) closeBtn.addEventListener('click', closeDetail);
+  if (closeBtn) closeBtn.addEventListener('click', closeDetail);
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) closeDetail();
-    });
-
-    // Initial setup
-    window.addEventListener('DOMContentLoaded', () => {
-      setupYearObserver();
-      setupAllWorkMasonryOnce();
-      updateAllTimelineLineStarts();
-    });
-  })();
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
+      closeDetail();
+    }
+  });
+})();
 </script>
 
 
