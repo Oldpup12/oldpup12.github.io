@@ -261,10 +261,10 @@
     }
     .work-card:hover .work-media { transform: scale(1.05); }
 
+    /* Image fills width, height auto-scales based on natural aspect ratio */
     .work-media img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
       display: block;
     }
 
@@ -293,10 +293,11 @@
       backdrop-filter: blur(4px);
     }
 
-    .portrait { aspect-ratio: 3 / 4; }
-    .square { aspect-ratio: 1 / 1; }
-    .landscape { aspect-ratio: 4 / 3; }
-    .wide { aspect-ratio: 16 / 9; }
+    /* Remove aspect ratio classes since we're using natural dimensions */
+    .portrait { min-height: 200px; }
+    .square { min-height: 200px; }
+    .landscape { min-height: 200px; }
+    .wide { min-height: 200px; }
 
     /* ---- Artwork detail overlay ---- */
     .work-detail-overlay {
@@ -388,13 +389,14 @@
       break-inside: avoid;
       margin-bottom: 2rem;
     }
-    /* NO hover zoom for detail images */
+    
+    /* Detail images also use natural dimensions */
     .detail-media img {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: auto;
       display: block;
     }
+    
     .detail-placeholder {
       position: absolute;
       inset: 0;
@@ -406,6 +408,7 @@
       letter-spacing: 0.4px;
       text-align: center;
       padding: 1rem;
+      min-height: 200px;
     }
 
     body.modal-open {
@@ -560,7 +563,7 @@
 
             <div class="work-grid">
               <a class="work-card" href="#" data-artwork="2026-1">
-                <div class="work-media portrait">
+                <div class="work-media">
                   <img src="images/ClayVag/ClayVag_1.jpg" alt="Untitled" />
                   <div class="work-size">10" × 8" × 11"</div>
                 </div>
@@ -813,12 +816,12 @@
         size: '10" × 8" × 11"',
         description: "Solid bisque-fired clay stained with oxides creates visceral, magnified internal remains.",
         images: [
-          { src: "images/ClayVag/ClayVag_1.jpg", ratio: "portrait" },
-          { src: "images/ClayVag/ClayVag_2.jpg", ratio: "portrait" },
-          { src: "images/ClayVag/ClayVag_3.jpg", ratio: "square" },
-          { src: "images/ClayVag/ClayVag_4.jpg", ratio: "landscape" },
-          { src: "images/ClayVag/ClayVag_5.jpg", ratio: "portrait" },
-          { src: "images/ClayVag/ClayVag_6.jpg", ratio: "square" }
+          { src: "images/ClayVag/ClayVag_1.jpg" },
+          { src: "images/ClayVag/ClayVag_2.jpg" },
+          { src: "images/ClayVag/ClayVag_3.jpg" },
+          { src: "images/ClayVag/ClayVag_4.jpg" },
+          { src: "images/ClayVag/ClayVag_5.jpg" },
+          { src: "images/ClayVag/ClayVag_6.jpg" }
         ]
       },
       "2025-1": {
@@ -916,7 +919,7 @@
         if (img.src) {
           // Real image
           return `
-            <div class="detail-media ${img.ratio}">
+            <div class="detail-media">
               <img src="${img.src}" alt="Artwork detail" />
             </div>
           `;
