@@ -423,6 +423,19 @@
       overflow: hidden;
     }
 
+    /* Order control for desktop - WhiteLineWalls */
+    .detail-media[data-order-desktop="1"] { order: 1; }
+    .detail-media[data-order-desktop="2"] { order: 2; }
+    .detail-media[data-order-desktop="3"] { order: 3; }
+    .detail-media[data-order-desktop="4"] { order: 4; }
+    .detail-media[data-order-desktop="5"] { order: 5; }
+
+    /* Order control for desktop - WallPins */
+    .detail-media[data-order-desktop="1"] { order: 1; }
+    .detail-media[data-order-desktop="2"] { order: 2; }
+    .detail-media[data-order-desktop="3"] { order: 3; }
+    .detail-media[data-order-desktop="4"] { order: 4; }
+
     /* ---- Desktop footer ---- */
     @media (min-width: 851px) {
       .contact a { font-size: 1.25rem; }
@@ -469,6 +482,10 @@
         margin-bottom: 1.25rem;
       }
 
+      /* Mobile: artwork order for 2025 - swap 2nd and 3rd */
+      .work-card[data-artwork="2025-2"] { order: 3; }
+      .work-card[data-artwork="2025-3"] { order: 2; }
+
       #detailGrid {
         column-count: 1;
         column-gap: 0;
@@ -479,6 +496,51 @@
 
       .work-detail-panel { padding-top: 6.75rem; }
       .detail-meta { font-size: 1.35rem; }
+      
+      /* Mobile: Left-align detail text */
+      .detail-text {
+        text-align: left;
+      }
+
+      /* Mobile: Custom image orders for each artwork */
+      /* ClayVag: 1, 4, 2, 5, 3, 6 */
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="4"] { order: 2; }
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="2"] { order: 3; }
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="5"] { order: 4; }
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="3"] { order: 5; }
+      #detailGrid[data-artwork="2026-1"] .detail-media[data-order-mobile="6"] { order: 6; }
+
+      /* PinkLines: 1, 4, 2, 5, 3, 6 */
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="4"] { order: 2; }
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="2"] { order: 3; }
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="5"] { order: 4; }
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="3"] { order: 5; }
+      #detailGrid[data-artwork="2025-1"] .detail-media[data-order-mobile="6"] { order: 6; }
+
+      /* RockLines: 1, 3, 2 */
+      #detailGrid[data-artwork="2025-2"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2025-2"] .detail-media[data-order-mobile="3"] { order: 2; }
+      #detailGrid[data-artwork="2025-2"] .detail-media[data-order-mobile="2"] { order: 3; }
+
+      /* WhiteLineWalls: 1, 4, 2, 5, 3 */
+      #detailGrid[data-artwork="2025-4"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2025-4"] .detail-media[data-order-mobile="4"] { order: 2; }
+      #detailGrid[data-artwork="2025-4"] .detail-media[data-order-mobile="2"] { order: 3; }
+      #detailGrid[data-artwork="2025-4"] .detail-media[data-order-mobile="5"] { order: 4; }
+      #detailGrid[data-artwork="2025-4"] .detail-media[data-order-mobile="3"] { order: 5; }
+
+      /* BlackLines: 1, 3, 2 */
+      #detailGrid[data-artwork="2024-1"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2024-1"] .detail-media[data-order-mobile="3"] { order: 2; }
+      #detailGrid[data-artwork="2024-1"] .detail-media[data-order-mobile="2"] { order: 3; }
+
+      /* WallPins: 1, 3, 2, 4 */
+      #detailGrid[data-artwork="2024-2"] .detail-media[data-order-mobile="1"] { order: 1; }
+      #detailGrid[data-artwork="2024-2"] .detail-media[data-order-mobile="3"] { order: 2; }
+      #detailGrid[data-artwork="2024-2"] .detail-media[data-order-mobile="2"] { order: 3; }
+      #detailGrid[data-artwork="2024-2"] .detail-media[data-order-mobile="4"] { order: 4; }
     }
 
     .with-nav { padding-top: 5rem; }
@@ -815,12 +877,12 @@
         size: '10" × 8" × 11"',
         description: "Solid bisque-fired clay stained with oxides creates visceral, magnified internal remains.",
         images: [
-          { src: "images/ClayVag/ClayVag_1.jpg" },
-          { src: "images/ClayVag/ClayVag_2.jpg" },
-          { src: "images/ClayVag/ClayVag_3.jpg" },
-          { src: "images/ClayVag/ClayVag_4.jpg" },
-          { src: "images/ClayVag/ClayVag_5.jpg" },
-          { src: "images/ClayVag/ClayVag_6.jpg" }
+          { src: "images/ClayVag/ClayVag_1.jpg", mobileOrder: 1 },
+          { src: "images/ClayVag/ClayVag_2.jpg", mobileOrder: 2 },
+          { src: "images/ClayVag/ClayVag_3.jpg", mobileOrder: 3 },
+          { src: "images/ClayVag/ClayVag_4.jpg", mobileOrder: 4 },
+          { src: "images/ClayVag/ClayVag_5.jpg", mobileOrder: 5 },
+          { src: "images/ClayVag/ClayVag_6.jpg", mobileOrder: 6 }
         ]
       },
       "2025-1": {
@@ -830,12 +892,12 @@
         size: '101" × 53" × 78"',
         description: "Linear three-dimensional forms intertwine within and encompass the room, their shadows masquerading as physical lines to create a space of webbed chaos. Bulbous lines pull taut while drips linger at the edge of descent. The surface is worn—stretched and scarred in places—its form shifting with each new angle, never settling into one shape for long.",
         images: [
-          { src: "images/PinkLines/PinkLines_1.jpg" },
-          { src: "images/PinkLines/PinkLines_2.jpg" },
-          { src: "images/PinkLines/PinkLines_3.jpg" },
-          { src: "images/PinkLines/PinkLines_4.jpg" },
-          { src: "images/PinkLines/PinkLines_5.jpg" },
-          { src: "images/PinkLines/PinkLines_6.jpg" }
+          { src: "images/PinkLines/PinkLines_1.jpg", mobileOrder: 1 },
+          { src: "images/PinkLines/PinkLines_2.jpg", mobileOrder: 2 },
+          { src: "images/PinkLines/PinkLines_3.jpg", mobileOrder: 3 },
+          { src: "images/PinkLines/PinkLines_4.jpg", mobileOrder: 4 },
+          { src: "images/PinkLines/PinkLines_5.jpg", mobileOrder: 5 },
+          { src: "images/PinkLines/PinkLines_6.jpg", mobileOrder: 6 }
         ]
       },
       "2025-2": {
@@ -845,9 +907,9 @@
         size: 'Varies; Approx: 24" × 32" × 144"',
         description: "Two long lines emerge from the wall, suspending in the air before draping onto the floor. As they glimmer against the light, a micro-growth emerges where they meet the ground.",
         images: [
-          { src: "images/RockLines/RockLines_1.jpg" },
-          { src: "images/RockLines/RockLines_2.jpg" },
-          { src: "images/RockLines/RockLines_3.jpg" }
+          { src: "images/RockLines/RockLines_1.jpg", mobileOrder: 1 },
+          { src: "images/RockLines/RockLines_2.jpg", mobileOrder: 2 },
+          { src: "images/RockLines/RockLines_3.jpg", mobileOrder: 3 }
         ]
       },
       "2025-3": {
@@ -869,11 +931,11 @@
         size: '96" × 36" × 108"',
         description: "White lines emerge from and recede back into a white wall, clustering densely as they drape onto the floor below. Bumps and raised areas interrupt their surfaces, creating an uneven, organic texture. The matte lines mass together in chaotic accumulation, their forms appearing to shift as if they are moving.",
         images: [
-          { src: "images/WhiteLineWalls/WhiteLineWalls_1.jpg" },
-          { src: "images/WhiteLineWalls/WhiteLineWalls_2.jpg" },
-          { src: "images/WhiteLineWalls/WhiteLineWalls_3.jpg" },
-          { src: "images/WhiteLineWalls/WhiteLineWalls_4.jpg" },
-          { src: "images/WhiteLineWalls/WhiteLineWalls_5.jpg" }
+          { src: "images/WhiteLineWalls/WhiteLineWalls_1.jpg", desktopOrder: 1, mobileOrder: 1 },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_2.jpg", desktopOrder: 2, mobileOrder: 2 },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_3.jpg", desktopOrder: 5, mobileOrder: 3 },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_4.jpg", desktopOrder: 3, mobileOrder: 4 },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_5.jpg", desktopOrder: 4, mobileOrder: 5 }
         ]
       },
       "2024-1": {
@@ -882,9 +944,9 @@
         size: "Varies",
         description: "An exploratory expression of invasive growth.",
         images: [
-          { src: "images/BlackLines/BlackLines_1.jpg" },
-          { src: "images/BlackLines/BlackLines_2.jpg" },
-          { src: "images/BlackLines/BlackLines_3.jpg" }
+          { src: "images/BlackLines/BlackLines_1.jpg", mobileOrder: 1 },
+          { src: "images/BlackLines/BlackLines_2.jpg", mobileOrder: 2 },
+          { src: "images/BlackLines/BlackLines_3.jpg", mobileOrder: 3 }
         ]
       },
       "2024-2": {
@@ -894,24 +956,30 @@
         size: '1" × 2" (Individual)',
         description: "This installation utilizes preexisting holes throughout the gallery, where each hole appears as if undergoing an irritation. A small rusted needle is found inserted at the center of each hole. The details are subtle until seen upon close inspection.",
         images: [
-          { src: "images/WallPins/WallPins_1.jpg" },
-          { src: "images/WallPins/WallPins_2.jpg" },
-          { src: "images/WallPins/WallPins_3.jpg" },
-          { src: "images/WallPins/WallPins_4.jpg" }
+          { src: "images/WallPins/WallPins_1.jpg", desktopOrder: 1, mobileOrder: 1 },
+          { src: "images/WallPins/WallPins_2.jpg", desktopOrder: 2, mobileOrder: 2 },
+          { src: "images/WallPins/WallPins_3.jpg", desktopOrder: 4, mobileOrder: 3 },
+          { src: "images/WallPins/WallPins_4.jpg", desktopOrder: 3, mobileOrder: 4 }
         ]
       }
     };
 
     let savedScrollY = 0;
 
-    function renderDetailImages(images) {
+    function renderDetailImages(artId, images) {
       if (!detailGrid) return;
 
-      detailGrid.innerHTML = images.map(img => {
+      detailGrid.setAttribute('data-artwork', artId);
+
+      detailGrid.innerHTML = images.map((img, index) => {
         if (img.src) {
-          // Real image
+          const desktopOrder = img.desktopOrder || (index + 1);
+          const mobileOrder = img.mobileOrder || (index + 1);
+          
           return `
-            <div class="detail-media">
+            <div class="detail-media" 
+                 data-order-desktop="${desktopOrder}" 
+                 data-order-mobile="${mobileOrder}">
               <img src="${img.src}" alt="Artwork detail" />
             </div>
           `;
@@ -944,7 +1012,7 @@
 
       if (detailMeta) detailMeta.innerHTML = `${data.title} • ${materialText} • ${data.size}`;
       if (detailDesc) detailDesc.textContent = data.description;
-      renderDetailImages(data.images);
+      renderDetailImages(artId, data.images);
 
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
