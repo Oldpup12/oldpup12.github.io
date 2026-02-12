@@ -57,11 +57,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    @keyframes fadeOut {
-      from { opacity: 0.65; }
-      to { opacity: 0; }
-    }
-
     .name {
       font-size: 3rem;
       margin-bottom: 4rem;
@@ -189,17 +184,35 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
-    /* Work hint text */
+    /* Hint under Work heading (transition-based, reliable) */
     .work-hint {
       font-size: 0.95rem;
-      opacity: 0.65;
       letter-spacing: 0.3px;
-      margin-top: 0.5rem;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 800ms ease, transform 800ms ease;
+      user-select: none;
+      pointer-events: none;
+      margin-top: -1rem;   /* keeps it snug under the heading */
+      margin-bottom: 0.25rem;
+      text-align: center;
+      width: min(1100px, 92vw);
     }
-    
-    /* When hiding, use animation */
-    .work-hint.hiding {
-      animation: fadeOut 1s ease forwards;
+    /* Show it when Work view animates in (uses transition, not keyframes) */
+    #work.animate .work-hint {
+      opacity: 0.62;
+      transform: translateY(0);
+    }
+    /* Hide it (must come AFTER the rule above so it wins on ties) */
+    #work .work-hint.is-hidden {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    @media (max-width: 850px) {
+      .work-hint { font-size: 0.9rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .work-hint { transition: none; }
     }
 
     .work-wrapper {
@@ -364,12 +377,12 @@
       opacity: 0.95;
       margin-bottom: 0.6rem;
     }
-    
+
     /* Smaller font for material details in parentheses */
     .detail-meta .material-details {
       font-size: 0.85em;
     }
-    
+
     .detail-desc {
       font-size: 1.05rem;
       line-height: 1.65;
@@ -413,25 +426,25 @@
       break-inside: avoid;
       margin-bottom: 2rem;
     }
-    
+
     /* Desktop: Force column breaks for specific artworks */
     /* WhiteLineWalls: Column 1 has 1,2,3 then Column 2 has 4,5 */
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) {
       break-after: column;
     }
-    
+
     /* WallPins: Column 1 has 1,2 then Column 2 has 3,4 */
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) {
       break-after: column;
     }
-    
+
     /* Detail images also use natural dimensions */
     .detail-media img {
       width: 100%;
       height: auto;
       display: block;
     }
-    
+
     .detail-placeholder {
       position: absolute;
       inset: 0;
@@ -479,8 +492,6 @@
 
       .main.work { padding-top: 6.25rem; }
 
-      .work-hint { font-size: 0.9rem; }
-
       .work-year {
         grid-template-columns: 80px 1fr;
         gap: 1.5rem;
@@ -515,14 +526,14 @@
         display: flex;
         flex-direction: column;
       }
-      
+
       .detail-media {
         margin-bottom: 1.25rem;
       }
 
       .work-detail-panel { padding-top: 6.75rem; }
       .detail-meta { font-size: 1.35rem; }
-      
+
       /* Mobile: Left-align detail text */
       .detail-text {
         text-align: left;
@@ -588,7 +599,6 @@
     #contact .contact-center,
     #contact .contact-center .contact,
     #work .section-title,
-    #work .work-hint,
     #work .work-wrapper {
       opacity: 0;
     }
@@ -603,8 +613,7 @@
     #contact.animate .contact-center .contact:nth-child(2) { animation: fadeIn 0.8s ease forwards 0.45s; }
 
     #work.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
-    #work.animate .work-hint { animation: fadeIn 0.8s ease forwards 0.15s; }
-    #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.3s; }
+    #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.15s; }
   </style>
 </head>
 
@@ -644,7 +653,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -656,7 +665,9 @@
     <div class="container">
       <div class="main work">
         <h2 class="section-title" id="work-title">Work</h2>
-        <p class="work-hint" id="workHint">Click on any piece to learn more</p>
+
+        <!-- New hint text (fades out after 4s OR on first scroll attempt) -->
+        <p class="work-hint" id="workHint">Click a piece to learn more</p>
 
         <div class="work-wrapper">
           <!-- 2026 -->
@@ -766,7 +777,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -796,7 +807,7 @@
         <div class="contact">
           <a href="mailto:marcy.davis@tcu.edu">
             <img src="images/email.svg" alt="Email" class="email-icon" />
-            marcy.davis@tcu.edu
+            [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
           </a>
         </div>
       </div>
@@ -818,7 +829,7 @@
           <div class="contact">
             <a href="mailto:marcy.davis@tcu.edu">
               <img src="images/email.svg" alt="Email" class="email-icon" />
-              marcy.davis@tcu.edu
+              [marcy.davis@tcu.edu](mailto:marcy.davis@tcu.edu)
             </a>
           </div>
         </div>
@@ -837,9 +848,54 @@
       contact: document.querySelector('.link-contact'),
     };
 
-    let hintFadeTimeout = null;
-    let scrollY = 0;
-    let isWorkPage = false;
+    // ========== WORK HINT (robust) ==========
+    let workHintTimer = null;
+    let workHintController = null;
+
+    function teardownWorkHint() {
+      if (workHintTimer) {
+        clearTimeout(workHintTimer);
+        workHintTimer = null;
+      }
+      if (workHintController) {
+        workHintController.abort(); // removes all listeners attached with this signal
+        workHintController = null;
+      }
+    }
+
+    function setupWorkHint() {
+      const hint = document.getElementById('workHint');
+      if (!hint) return;
+
+      teardownWorkHint();
+      hint.classList.remove('is-hidden');
+
+      const controller = new AbortController();
+      workHintController = controller;
+
+      const hide = () => {
+        if (!hint.classList.contains('is-hidden')) hint.classList.add('is-hidden');
+        teardownWorkHint();
+      };
+
+      // Hide after 4 seconds
+      workHintTimer = setTimeout(hide, 4000);
+
+      // Hide on first sign of scrolling intent (more reliable than scroll alone)
+      window.addEventListener('wheel', hide, { passive: true, signal: controller.signal });
+      window.addEventListener('touchmove', hide, { passive: true, signal: controller.signal });
+
+      // Hide when the page actually scrolls (keyboard scroll, scrollbar drag, etc.)
+      window.addEventListener('scroll', () => {
+        if ((window.scrollY || 0) > 4) hide();
+      }, { passive: true, signal: controller.signal });
+
+      // Optional: hide on scroll keys
+      window.addEventListener('keydown', (e) => {
+        const keys = ['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Home', 'End'];
+        if (keys.includes(e.key)) hide();
+      }, { signal: controller.signal });
+    }
 
     function setActiveLink(view) {
       Object.keys(links).forEach(key => {
@@ -852,7 +908,6 @@
 
     function showView(view) {
       window.scrollTo(0, 0);
-      scrollY = 0;
 
       views.forEach(v => {
         const el = document.getElementById(v);
@@ -870,31 +925,13 @@
 
       setActiveLink(view);
 
-      // Clear any existing hint timeout
-      if (hintFadeTimeout) {
-        clearTimeout(hintFadeTimeout);
-        hintFadeTimeout = null;
-      }
-
       if (view === 'work') {
-        isWorkPage = true;
         requestAnimationFrame(() => {
           animateYearsOnScroll();
         });
-        // Start hint fade timer after page animations (1 second for animations + 4 seconds visible = 5 seconds total)
-        hintFadeTimeout = setTimeout(() => {
-          const hint = document.getElementById('workHint');
-          if (hint && !hint.classList.contains('hiding')) {
-            hint.classList.add('hiding');
-          }
-        }, 5000);
+        setupWorkHint();
       } else {
-        isWorkPage = false;
-        // Reset hint when leaving work page
-        const hint = document.getElementById('workHint');
-        if (hint) {
-          hint.classList.remove('hiding');
-        }
+        teardownWorkHint();
       }
     }
 
@@ -903,28 +940,8 @@
       showView(views.includes(hash) ? hash : 'home');
     }
 
-    // Scroll listener for hint fade
-    function onScroll() {
-      if (!isWorkPage) return;
-      
-      const currentScrollY = window.scrollY || window.pageYOffset;
-      
-      // If user scrolled more than 10 pixels, fade the hint
-      if (Math.abs(currentScrollY - scrollY) > 10) {
-        const hint = document.getElementById('workHint');
-        if (hint && !hint.classList.contains('hiding')) {
-          hint.classList.add('hiding');
-          if (hintFadeTimeout) {
-            clearTimeout(hintFadeTimeout);
-            hintFadeTimeout = null;
-          }
-        }
-      }
-    }
-
     window.addEventListener('hashchange', route);
     window.addEventListener('DOMContentLoaded', route);
-    window.addEventListener('scroll', onScroll);
 
     // ========== WORK: YEAR FADE-IN ON SCROLL ==========
     let yearObserver = null;
@@ -1063,7 +1080,6 @@
             </div>
           `;
         } else {
-          // Placeholder
           return `
             <div class="detail-media ${img.ratio}">
               <div class="detail-placeholder">${img.label}</div>
@@ -1083,7 +1099,6 @@
 
       overlay.scrollTop = 0;
 
-      // Format material with smaller font for details in parentheses
       let materialText = data.material;
       if (data.materialDetails) {
         materialText += ` <span class="material-details">${data.materialDetails}</span>`;
@@ -1096,7 +1111,6 @@
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Push a state to history so back button can close the detail
       history.pushState({ detailOpen: true, artId: artId }, '', location.href);
       detailHistoryPushed = true;
     }
@@ -1115,7 +1129,6 @@
         window.scrollTo(0, restoreY);
       }, 350);
 
-      // If we pushed history and user closed via × button, go back in history
       if (detailHistoryPushed && !skipHistory) {
         detailHistoryPushed = false;
         history.back();
@@ -1124,11 +1137,9 @@
       }
     }
 
-    // Listen for browser back/forward button
-    window.addEventListener('popstate', (event) => {
-      // If detail overlay is open and user pressed back, close it
+    window.addEventListener('popstate', () => {
       if (overlay && overlay.classList.contains('open')) {
-        closeDetail(true); // skipHistory = true to avoid calling history.back() again
+        closeDetail(true);
       }
     });
 
