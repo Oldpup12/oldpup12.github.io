@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Marcy Davis | Sculpture & Installation</title>
+  <title>Marcy Davis</title>
 
   <!-- Font: Playfair Display -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
@@ -34,11 +34,7 @@
     .view.active { display: block; }
 
     /* ---- Shared layout ---- */
-    .container {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .container { display: flex; flex-direction: column; min-height: 100vh; }
     .main {
       flex: 1;
       display: flex;
@@ -47,12 +43,18 @@
       padding: 2rem 5rem;
       gap: 4rem;
     }
-    .left  { flex: 1; animation: fadeIn 1s ease forwards; }
-    .right { flex: 1; display: flex; align-items: center; justify-content: center; animation: fadeIn 1s ease forwards 0.5s; }
+    .left { flex: 1; animation: fadeIn 1s ease forwards; }
+    .right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 1s ease forwards 0.5s;
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .name {
@@ -75,7 +77,7 @@
       background: #222;
       border-radius: 1rem;
       overflow: hidden;
-      transition: transform 0.8s ease;
+      transition: transform 0.6s ease;
     }
     .image-placeholder:hover { transform: scale(1.05); }
     .image-placeholder img {
@@ -86,32 +88,19 @@
     }
 
     /* ---- Footer (Contact) ---- */
-    .footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 2rem;
-      padding: 1.5rem 2rem;
-    }
+    .footer { display: flex; justify-content: flex-end; gap: 2rem; padding: 1.5rem 2rem; }
     .contact a {
       display: flex;
       align-items: center;
       color: inherit;
       text-decoration: none;
-      font-size: 1rem; /* fallback/mobile */
+      font-size: 1rem;
       transition: transform 0.15s ease, opacity 0.2s ease;
       opacity: 0.95;
     }
     .contact a:hover { transform: scale(1.04); opacity: 1; }
-    .contact a img {
-      width: 24px;
-      height: 24px;
-      margin-right: 0.5em;
-      filter: invert(1);
-    }
-    .contact a img.email-icon {
-      width: 21px;
-      height: 21px;
-    }
+    .contact a img { width: 24px; height: 24px; margin-right: 0.5em; filter: invert(1); }
+    .contact a img.email-icon { width: 21px; height: 21px; }
 
     /* ---- Nav Bar ---- */
     .top-nav {
@@ -127,12 +116,9 @@
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
       z-index: 50;
-      transition: background 0.2s ease, border-color 0.2s ease;
+      transition: background 0.5s ease, border-color 0.5s ease;
     }
-    .top-nav:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.22);
-    }
+    .top-nav:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); }
     .top-nav a {
       color: #f0f0f0;
       text-decoration: none;
@@ -144,12 +130,7 @@
       transition: transform 0.15s ease, opacity 0.2s ease;
     }
     .top-nav a:hover { transform: scale(1.06); opacity: 1; }
-    .top-nav a.active {
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-
-    /* small visual emphasis for the "MD" brand link (still matching your font) */
+    .top-nav a.active { text-decoration: underline; text-underline-offset: 4px; }
     .top-nav a.link-home { font-weight: 700; letter-spacing: 0.5px; }
 
     /* ---- ABOUT page ---- */
@@ -158,7 +139,7 @@
       align-items: center;
       text-align: center;
       gap: 2rem;
-      padding-top: 5rem; 
+      padding-top: 5rem;
     }
     .about-image {
       width: min(780px, 90vw);
@@ -167,10 +148,7 @@
       border-radius: 1rem;
       box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
     }
-    .section-title {
-      font-size: 2rem;
-      letter-spacing: 0.5px;
-    }
+    .section-title { font-size: 2rem; letter-spacing: 0.5px; }
     #about .section-title { margin-top: 3.0rem; }
     .about-text {
       max-width: 980px;
@@ -180,11 +158,7 @@
       white-space: pre-line;
       opacity: 0.98;
     }
-    .about-cta {
-      margin-top: 1.5rem;
-      font-size: 1.25rem;
-      opacity: 0.98;
-    }
+    .about-cta { margin-top: 1.5rem; font-size: 1.25rem; opacity: 0.98; }
 
     /* ---- CONTACT Page ---- */
     #contact-title .section-title { margin-top: 0.2rem; }
@@ -194,48 +168,284 @@
       padding-top: 6rem;
       text-align: center;
     }
-    .contact-center {
+    .contact-center { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .contact-center .contact a { font-size: 1.25rem; }
+    .contact-center .contact a img { width: 28px; height: 28px; }
+    .contact-center .contact a img.email-icon { width: 24px; height: 24px; }
+
+    /* ---- WORK Page ---- */
+    .main.work {
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 2rem;
+      padding-top: 6rem;
+      padding-bottom: 2rem;
+    }
+    #work .section-title { margin-top: 0.2rem; }
+
+    .work-wrapper {
+      width: min(1100px, 92vw);
+      display: flex;
+      flex-direction: column;
+      gap: 4rem;
+    }
+
+    /* Year block: left timeline, right artworks */
+    .work-year {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 3rem;
+      align-items: start;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .work-year.in-view { opacity: 1; }
+
+    /* Timeline column: MUST stretch full height for sticky + line to work */
+    .work-timeline {
+      position: relative;
+      align-self: stretch;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1rem;
     }
-    .contact-center .contact a {
-      font-size: 1.25rem;
+
+    /* Sticky year label */
+    .work-year-label {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 5.75rem;
+      z-index: 2;
+      font-size: 1.75rem;
+      letter-spacing: 0.6px;
+      opacity: 0.94;
+      line-height: 1.2;
+      text-align: center;
+      padding-bottom: 1rem;
     }
-    .contact-center .contact a img {
-      width: 28px;
-      height: 28px;
+
+    /* Vertical line below year */
+    .work-timeline-line {
+      position: absolute;
+      top: 3.5rem;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 2px;
     }
-    .contact-center .contact a img.email-icon {
-      width: 24px;
-      height: 24px;
+
+    /* PURE CSS COLUMN STACKING using CSS columns property */
+    .work-grid {
+      column-count: 2;
+      column-gap: 2rem;
+    }
+
+    .work-card {
+      display: block;
+      color: inherit;
+      text-decoration: none;
+      break-inside: avoid;
+      margin-bottom: 2rem;
+    }
+
+    .work-media {
+      background: #222;
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+      transition: transform 0.6s ease;
+    }
+    .work-card:hover .work-media { transform: scale(1.05); }
+
+    /* Image fills width, height auto-scales based on natural aspect ratio */
+    .work-media img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .work-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 1.05rem;
+      letter-spacing: 0.4px;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .work-size {
+      position: absolute;
+      right: 0.85rem;
+      bottom: 0.75rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+      background: rgba(0,0,0,0.35);
+      padding: 0.2rem 0.45rem;
+      border-radius: 0.55rem;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Remove aspect ratio classes since we're using natural dimensions */
+    .portrait { min-height: 200px; }
+    .square { min-height: 200px; }
+    .landscape { min-height: 200px; }
+    .wide { min-height: 200px; }
+
+    /* ---- Artwork detail overlay ---- */
+    .work-detail-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(0,0,0,0.62);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .work-detail-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .work-detail-panel {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+      padding: 6.25rem 0 3rem;
+      transform: translateY(14px);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    .work-detail-overlay.open .work-detail-panel {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .detail-header {
+      width: 100%;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+    .detail-text { max-width: 980px; }
+    .detail-meta {
+      font-size: 1.55rem;
+      letter-spacing: 0.3px;
+      opacity: 0.95;
+      margin-bottom: 0.6rem;
+    }
+    
+    /* Smaller font for material details in parentheses */
+    .detail-meta .material-details {
+      font-size: 0.85em;
+    }
+    
+    .detail-desc {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      opacity: 0.88;
+    }
+
+    .detail-close {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: #f0f0f0;
+      border-radius: 999px;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+      flex: 0 0 auto;
+      margin-top: 0.1rem;
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+    .detail-close:hover {
+      transform: scale(1.06);
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.22);
+    }
+
+    /* Detail images grid - DESKTOP */
+    #detailGrid {
+      column-count: 2;
+      column-gap: 2rem;
+    }
+
+    .detail-media {
+      background: #222;
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08) inset;
+      break-inside: avoid;
+      margin-bottom: 2rem;
+    }
+    
+    /* Desktop: Force column breaks for specific artworks */
+    /* WhiteLineWalls: Column 1 has 1,2,3 then Column 2 has 4,5 */
+    #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) {
+      break-after: column;
+    }
+    
+    /* WallPins: Column 1 has 1,2 then Column 2 has 3,4 */
+    #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) {
+      break-after: column;
+    }
+    
+    /* Detail images also use natural dimensions */
+    .detail-media img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    .detail-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 1.05rem;
+      letter-spacing: 0.4px;
+      text-align: center;
+      padding: 1rem;
+      min-height: 200px;
+    }
+
+    body.modal-open {
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
     }
 
     /* ---- Desktop footer ---- */
-    @media (min-width: 769px) {
+    @media (min-width: 851px) {
       .contact a { font-size: 1.25rem; }
       .contact a img { width: 28px; height: 28px; }
       .contact a img.email-icon { width: 21px; height: 21px; }
     }
 
-    /* ---- Mobile ---- */
-    @media (max-width: 768px) {
-      .main {
-        flex-direction: column;
-        text-align: center;
-        padding: 2rem;
-      }
-      .footer {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: flex-end;
-      }
-      .image-placeholder {
-        width: 80%;
-        height: auto;
-        aspect-ratio: 3/4;
-      }
+    /* ---- Mobile (triggers earlier at 850px instead of 768px) ---- */
+    @media (max-width: 850px) {
+      .main { flex-direction: column; text-align: center; padding: 2rem; }
+      .footer { flex-direction: column; gap: 1rem; align-items: flex-end; }
+      .image-placeholder { width: 80%; height: auto; aspect-ratio: 3/4; }
       .contact a img { width: 20px; height: 20px; }
       .contact a img.email-icon { width: 18px; height: 18px; }
 
@@ -248,31 +458,131 @@
         justify-content: center;
       }
       .top-nav a { font-size: 1rem; }
+
+      .main.work { padding-top: 6.25rem; }
+
+      .work-year {
+        grid-template-columns: 80px 1fr;
+        gap: 1.5rem;
+      }
+      .work-year-label {
+        top: 6.25rem;
+        font-size: 1.35rem;
+      }
+      .work-timeline-line { top: 2.8rem; }
+
+      /* Mobile: single column */
+      .work-grid {
+        column-count: 1;
+        column-gap: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .work-card {
+        margin-bottom: 1.25rem;
+      }
+
+      /* Mobile: artwork order for 2025 - PinkLines, PlasterChunk, RockLines, WhiteLineWalls */
+      .work-card[data-artwork="2025-1"] { order: 1; }
+      .work-card[data-artwork="2025-3"] { order: 2; }
+      .work-card[data-artwork="2025-2"] { order: 3; }
+      .work-card[data-artwork="2025-4"] { order: 4; }
+
+      /* Mobile: Detail grid switches to flexbox for order control */
+      #detailGrid {
+        column-count: 1;
+        column-gap: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      
+      .detail-media {
+        margin-bottom: 1.25rem;
+      }
+
+      .work-detail-panel { padding-top: 6.75rem; }
+      .detail-meta { font-size: 1.35rem; }
+      
+      /* Mobile: Left-align detail text */
+      .detail-text {
+        text-align: left;
+      }
+
+      /* Mobile: Remove desktop column breaks */
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) {
+        break-after: auto;
+      }
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) {
+        break-after: auto;
+      }
+
+      /* Mobile: Custom image orders using flexbox order property */
+      /* ClayVag: 1, 4, 2, 5, 3, 6 */
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(4) { order: 2; }
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(2) { order: 3; }
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(5) { order: 4; }
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(3) { order: 5; }
+      #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(6) { order: 6; }
+
+      /* PinkLines: 1, 4, 2, 5, 3, 6 */
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(4) { order: 2; }
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(2) { order: 3; }
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(5) { order: 4; }
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(3) { order: 5; }
+      #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(6) { order: 6; }
+
+      /* RockLines: 1, 3, 2 */
+      #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(3) { order: 2; }
+      #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(2) { order: 3; }
+
+      /* WhiteLineWalls: 1, 4, 2, 5, 3 */
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(4) { order: 2; }
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(2) { order: 3; }
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(5) { order: 4; }
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { order: 5; }
+
+      /* BlackLines: 1, 3, 2 */
+      #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(3) { order: 2; }
+      #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(2) { order: 3; }
+
+      /* WallPins: 1, 3, 2, 4 */
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(1) { order: 1; }
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(3) { order: 2; }
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { order: 3; }
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(4) { order: 4; }
     }
 
-    /* reserve space under the fixed nav so content never sits underneath it on load (used on Home view) */
     .with-nav { padding-top: 5rem; }
-    @media (max-width: 768px) { .with-nav { padding-top: 5.75rem; } }
+    @media (max-width: 850px) { .with-nav { padding-top: 5.75rem; } }
 
-    /* ---- Page text animations (About/Contact) ---- */
-    /* default hidden so they fade in only when their view gets .animate */
+    /* ---- Page text animations ---- */
     #about .section-title,
     #about .about-text,
     #about .about-cta,
     #contact .section-title,
     #contact .contact-center,
-    #contact .contact-center .contact { opacity: 0; }
+    #contact .contact-center .contact,
+    #work .section-title,
+    #work .work-wrapper {
+      opacity: 0;
+    }
 
-    /* About: staggered fade-in */
     #about.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
-    #about.animate .about-text    { animation: fadeIn 0.8s ease forwards 0.2s; }
-    #about.animate .about-cta     { animation: fadeIn 0.8s ease forwards 0.4s; }
+    #about.animate .about-text { animation: fadeIn 0.8s ease forwards 0.2s; }
+    #about.animate .about-cta { animation: fadeIn 0.8s ease forwards 0.4s; }
 
-    /* Contact: header, block, then each link */
-    #contact.animate .section-title                    { animation: fadeIn 0.8s ease forwards 0s; }
-    #contact.animate .contact-center                   { animation: fadeIn 0.8s ease forwards 0.15s; }
+    #contact.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
+    #contact.animate .contact-center { animation: fadeIn 0.8s ease forwards 0.15s; }
     #contact.animate .contact-center .contact:nth-child(1) { animation: fadeIn 0.8s ease forwards 0.3s; }
     #contact.animate .contact-center .contact:nth-child(2) { animation: fadeIn 0.8s ease forwards 0.45s; }
+
+    #work.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
+    #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.15s; }
   </style>
 </head>
 
@@ -280,19 +590,19 @@
   <!-- NAV BAR -->
   <nav class="top-nav" aria-label="Primary">
     <a href="#home" class="link-home" aria-label="Home">MD</a>
+    <a href="#work" class="link-work" aria-label="Work">Work</a>
     <a href="#about" class="link-about" aria-label="About Me">About</a>
     <a href="#contact" class="link-contact" aria-label="Contact Me">Contact</a>
   </nav>
 
-  <!-- HOME (Main page) -->
+  <!-- HOME -->
   <section id="home" class="view active" aria-labelledby="home-title">
     <div class="container with-nav">
       <div class="main">
         <div class="left">
           <h1 class="name" id="home-title">Marcy Davis</h1>
           <p class="bio">
-            Marcy is a third-year MFA candidate in Sculpture at Texas Christian University.
-            She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
+            Marcy is a third-year MFA candidate in Sculpture at Texas Christian University. She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
           </p>
         </div>
         <div class="right">
@@ -319,24 +629,140 @@
     </div>
   </section>
 
+  <!-- WORK -->
+  <section id="work" class="view" aria-labelledby="work-title">
+    <div class="container">
+      <div class="main work">
+        <h2 class="section-title" id="work-title">Work</h2>
+
+        <div class="work-wrapper">
+          <!-- 2026 -->
+          <div class="work-year">
+            <div class="work-timeline">
+              <div class="work-year-label">2026</div>
+              <div class="work-timeline-line"></div>
+            </div>
+
+            <div class="work-grid">
+              <a class="work-card" href="#" data-artwork="2026-1">
+                <div class="work-media">
+                  <img src="images/ClayVag/ClayVag_1.jpg" alt="Untitled" />
+                  <div class="work-size">10" × 8" × 11"</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- 2025 -->
+          <div class="work-year">
+            <div class="work-timeline">
+              <div class="work-year-label">2025</div>
+              <div class="work-timeline-line"></div>
+            </div>
+
+            <div class="work-grid">
+              <a class="work-card" href="#" data-artwork="2025-1">
+                <div class="work-media">
+                  <img src="images/PinkLines/PinkLines_1.jpg" alt="Untitled" />
+                  <div class="work-size">101" × 53" × 78"</div>
+                </div>
+              </a>
+
+              <a class="work-card" href="#" data-artwork="2025-2">
+                <div class="work-media">
+                  <img src="images/RockLines/RockLines_1.jpg" alt="Untitled" />
+                  <div class="work-size">Varies; Approx: 24" × 32" × 144"</div>
+                </div>
+              </a>
+
+              <a class="work-card" href="#" data-artwork="2025-3">
+                <div class="work-media">
+                  <img src="images/PlasterChunk/PlasterChunk_1.jpg" alt="Untitled" />
+                  <div class="work-size">30" × 27" × 43"</div>
+                </div>
+              </a>
+
+              <a class="work-card" href="#" data-artwork="2025-4">
+                <div class="work-media">
+                  <img src="images/WhiteLineWalls/WhiteLineWalls_1.jpg" alt="Untitled" />
+                  <div class="work-size">96" × 36" × 108"</div>
+                </div>
+              </a>
+            </div>
+          </div>
+
+          <!-- 2024 -->
+          <div class="work-year">
+            <div class="work-timeline">
+              <div class="work-year-label">2024</div>
+              <div class="work-timeline-line"></div>
+            </div>
+
+            <div class="work-grid">
+              <a class="work-card" href="#" data-artwork="2024-1">
+                <div class="work-media">
+                  <img src="images/BlackLines/BlackLines_1.jpg" alt="Untitled" />
+                  <div class="work-size">Varies</div>
+                </div>
+              </a>
+
+              <a class="work-card" href="#" data-artwork="2024-2">
+                <div class="work-media">
+                  <img src="images/WallPins/WallPins_1.jpg" alt="Untitled" />
+                  <div class="work-size">1" × 2" (Individual)</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Overlay -->
+        <div class="work-detail-overlay" id="workDetailOverlay" aria-hidden="true">
+          <div class="work-detail-panel">
+            <div class="detail-header">
+              <div class="detail-text">
+                <div class="detail-meta" id="detailMeta">Title • Material • Size</div>
+                <div class="detail-desc" id="detailDesc">Description</div>
+              </div>
+              <button class="detail-close" id="detailClose">×</button>
+            </div>
+
+            <div id="detailGrid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="contact">
+          <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
+            <img src="images/instagram.svg" alt="Instagram" />
+            _mars_studio_
+          </a>
+        </div>
+        <div class="contact">
+          <a href="mailto:marcy.davis@tcu.edu">
+            <img src="images/email.svg" alt="Email" class="email-icon" />
+            marcy.davis@tcu.edu
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- ABOUT -->
   <section id="about" class="view" aria-labelledby="about-title">
     <div class="container">
       <div class="main about">
-        <!-- <div class="about-image" aria-label="Artist photo placeholder"></div> -->
-
         <h2 class="section-title" id="about-title">Artist Statement</h2>
-
         <div class="about-text">
-A body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land—yet it is also a terrain, restless and alive with invisible life. In these crossings, edges collapse: flesh becomes landscape, and architecture breathes like a body. My work unfolds in this unsettled in-between, where body and structure, inside and outside, are never fixed apart.
-<br>In my practice, I warp the familiar until it becomes unrecognizable. Materials such as wax or felt masquerade as skin, wounds, or scars, yet remain unnamable, unstable. They slip between recognition and estrangement, provoking both attraction and unease. What matters is not the material itself, but the experience of not fully knowing.
-<br>Thus, the result is work that doesn’t offer answers but confronts boundaries—the ones between body and structure, self and environment, fascination and repulsion. My installations invite viewers to linger in that environment, to feel the body as architecture, and architecture as a body unraveling. My work is deliberate in keeping it at arm’s length in understanding- contributing to a sense of ambiguity that promotes the viewer to outwardly experience the unknown.
+          A body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land—yet it is also a terrain, restless and alive with invisible life. In these crossings, edges collapse: flesh becomes landscape, and architecture breathes like a body. My work unfolds in this unsettled in-between, where body and structure, inside and outside, are never fixed apart.
+          <br>In my practice, I warp the familiar until it becomes unrecognizable. Materials such as wax or felt masquerade as skin, wounds, or scars, yet remain unnamable, unstable. They slip between recognition and estrangement, provoking both attraction and unease. What matters is not the material itself, but the experience of not fully knowing.
+          <br>Thus, the result is work that doesn't offer answers but confronts boundaries—the ones between body and structure, self and environment, fascination and repulsion. My installations invite viewers to linger in that environment, to feel the body as architecture, and architecture as a body unraveling. My work is deliberate in keeping it at arm's length in understanding- contributing to a sense of ambiguity that promotes the viewer to outwardly experience the unknown.
         </div>
-
         <p class="about-cta">For my cv / full portfolio, please contact me.</p>
       </div>
 
-      <!-- Footer present on ABOUT as well -->
       <div class="footer">
         <div class="contact">
           <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
@@ -359,7 +785,6 @@ A body is never just a body. It is a structure held by skin, pressed against wal
     <div class="container">
       <div class="main contact">
         <h2 class="section-title" id="contact-title">Contact</h2>
-
         <div class="contact-center">
           <div class="contact">
             <a href="https://instagram.com/_mars_studio_" target="_blank" rel="noopener noreferrer">
@@ -379,51 +804,260 @@ A body is never just a body. It is a structure held by skin, pressed against wal
   </section>
 
   <script>
-    // hash-router: #about, #contact, default -> home
-    (function () {
-      const views = ['home', 'about', 'contact'];
-      const links = {
-        home: document.querySelector('.link-home'),
-        about: document.querySelector('.link-about'),
-        contact: document.querySelector('.link-contact'),
-      };
+  (function () {
+    // ========== ROUTER ==========
+    const views = ['home', 'work', 'about', 'contact'];
+    const links = {
+      home: document.querySelector('.link-home'),
+      work: document.querySelector('.link-work'),
+      about: document.querySelector('.link-about'),
+      contact: document.querySelector('.link-contact'),
+    };
 
-      function setActiveLink(view) {
-        Object.keys(links).forEach(key => {
+    function setActiveLink(view) {
+      Object.keys(links).forEach(key => {
+        if (links[key]) {
           links[key].classList.toggle('active', view === key);
           links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+        }
+      });
+    }
+
+    function showView(view) {
+      window.scrollTo(0, 0);
+
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (!el) return;
+        el.classList.toggle('active', v === view);
+
+        if (v === view) {
+          el.classList.remove('animate');
+          void el.offsetWidth;
+          el.classList.add('animate');
+        } else {
+          el.classList.remove('animate');
+        }
+      });
+
+      setActiveLink(view);
+
+      if (view === 'work') {
+        requestAnimationFrame(() => {
+          animateYearsOnScroll();
         });
       }
+    }
 
-      function showView(view) {
-        views.forEach(v => {
-          const el = document.getElementById(v);
-          if (!el) return;
-          el.classList.toggle('active', v === view);
-          // re-trigger animations by toggling .animate on the active view
-          if (v === view) {
-            el.classList.remove('animate');
-            void el.offsetWidth;
-            el.classList.add('animate');
-          } else {
-            el.classList.remove('animate');
+    function route() {
+      const hash = (location.hash || '').replace('#', '').toLowerCase();
+      showView(views.includes(hash) ? hash : 'home');
+    }
+
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', route);
+
+    // ========== WORK: YEAR FADE-IN ON SCROLL ==========
+    let yearObserver = null;
+
+    function animateYearsOnScroll() {
+      const years = document.querySelectorAll('.work-year');
+      if (!years.length) return;
+
+      if (yearObserver) yearObserver.disconnect();
+
+      yearObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
           }
         });
-        setActiveLink(view);
-      }
+      }, { threshold: 0.15 });
 
-      function route() {
-        const hash = (location.hash || '').replace('#', '').toLowerCase();
-        if (views.includes(hash)) {
-          showView(hash);
+      years.forEach(y => yearObserver.observe(y));
+    }
+
+    // ========== ARTWORK DETAIL OVERLAY ==========
+    const overlay = document.getElementById('workDetailOverlay');
+    const closeBtn = document.getElementById('detailClose');
+    const detailMeta = document.getElementById('detailMeta');
+    const detailDesc = document.getElementById('detailDesc');
+    const detailGrid = document.getElementById('detailGrid');
+
+    const ARTWORKS = {
+      "2026-1": {
+        title: "Untitled",
+        material: "Clay, Oxide, Glue",
+        size: '10" × 8" × 11"',
+        description: "Solid bisque-fired clay stained with oxides creates visceral, magnified internal remains.",
+        images: [
+          { src: "images/ClayVag/ClayVag_1.jpg" },
+          { src: "images/ClayVag/ClayVag_2.jpg" },
+          { src: "images/ClayVag/ClayVag_3.jpg" },
+          { src: "images/ClayVag/ClayVag_4.jpg" },
+          { src: "images/ClayVag/ClayVag_5.jpg" },
+          { src: "images/ClayVag/ClayVag_6.jpg" }
+        ]
+      },
+      "2025-1": {
+        title: "Untitled",
+        material: "Various Materials",
+        materialDetails: "(Foam, Calk, Steel, Paint, Felt, Beeswax, Pepper)",
+        size: '101" × 53" × 78"',
+        description: "Linear three-dimensional forms intertwine within and encompass the room, their shadows masquerading as physical lines to create a space of webbed chaos. Bulbous lines pull taut while drips linger at the edge of descent. The surface is worn—stretched and scarred in places—its form shifting with each new angle, never settling into one shape for long.",
+        images: [
+          { src: "images/PinkLines/PinkLines_1.jpg" },
+          { src: "images/PinkLines/PinkLines_2.jpg" },
+          { src: "images/PinkLines/PinkLines_3.jpg" },
+          { src: "images/PinkLines/PinkLines_4.jpg" },
+          { src: "images/PinkLines/PinkLines_5.jpg" },
+          { src: "images/PinkLines/PinkLines_6.jpg" }
+        ]
+      },
+      "2025-2": {
+        title: "Untitled",
+        material: "Various Materials",
+        materialDetails: "(Felt, Silicone, Joint Compound, Paint, Ink, Rock, Wax)",
+        size: 'Varies; Approx: 24" × 32" × 144"',
+        description: "Two long lines emerge from the wall, suspending in the air before draping onto the floor. As they glimmer against the light, a micro-growth emerges where they meet the ground.",
+        images: [
+          { src: "images/RockLines/RockLines_1.jpg" },
+          { src: "images/RockLines/RockLines_2.jpg" },
+          { src: "images/RockLines/RockLines_3.jpg" }
+        ]
+      },
+      "2025-3": {
+        title: "Untitled",
+        material: "Various Materials",
+        materialDetails: "(Steel, Plaster, Hemp, Ink, Beeswax, Gauze)",
+        size: '30" × 27" × 43"',
+        description: "Clean white cuts mark the edges of a form placed in space. Bumps run along its curved surface while fibrous strings run down its hollow interior.",
+        images: [
+          { src: "images/PlasterChunk/PlasterChunk_1.jpg" },
+          { src: "images/PlasterChunk/PlasterChunk_2.jpg" },
+          { src: "images/PlasterChunk/PlasterChunk_3.jpg" }
+        ]
+      },
+      "2025-4": {
+        title: "Untitled",
+        material: "Various Material",
+        materialDetails: "(Steel, Foam, Calk, Beeswax)",
+        size: '96" × 36" × 108"',
+        description: "White lines emerge from and recede back into a white wall, clustering densely as they drape onto the floor below. Bumps and raised areas interrupt their surfaces, creating an uneven, organic texture. The matte lines mass together in chaotic accumulation, their forms appearing to shift as if they are moving.",
+        images: [
+          { src: "images/WhiteLineWalls/WhiteLineWalls_1.jpg" },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_2.jpg" },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_3.jpg" },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_4.jpg" },
+          { src: "images/WhiteLineWalls/WhiteLineWalls_5.jpg" }
+        ]
+      },
+      "2024-1": {
+        title: "Untitled",
+        material: "Ink",
+        size: "Varies",
+        description: "An exploratory expression of invasive growth.",
+        images: [
+          { src: "images/BlackLines/BlackLines_1.jpg" },
+          { src: "images/BlackLines/BlackLines_2.jpg" },
+          { src: "images/BlackLines/BlackLines_3.jpg" }
+        ]
+      },
+      "2024-2": {
+        title: "Untitled",
+        material: "Various Material",
+        materialDetails: "(Ink, Pastel, Insect pin, Rust)",
+        size: '1" × 2" (Individual)',
+        description: "This installation utilizes preexisting holes throughout the gallery, where each hole appears as if undergoing an irritation. A small rusted needle is found inserted at the center of each hole. The details are subtle until seen upon close inspection.",
+        images: [
+          { src: "images/WallPins/WallPins_1.jpg" },
+          { src: "images/WallPins/WallPins_2.jpg" },
+          { src: "images/WallPins/WallPins_3.jpg" },
+          { src: "images/WallPins/WallPins_4.jpg" }
+        ]
+      }
+    };
+
+    let savedScrollY = 0;
+
+    function renderDetailImages(artId, images) {
+      if (!detailGrid) return;
+
+      detailGrid.setAttribute('data-artwork', artId);
+
+      detailGrid.innerHTML = images.map((img) => {
+        if (img.src) {
+          return `
+            <div class="detail-media">
+              <img src="${img.src}" alt="Artwork detail" />
+            </div>
+          `;
         } else {
-          showView('home');
+          // Placeholder
+          return `
+            <div class="detail-media ${img.ratio}">
+              <div class="detail-placeholder">${img.label}</div>
+            </div>
+          `;
         }
+      }).join('');
+    }
+
+    function openDetail(artId) {
+      const data = ARTWORKS[artId];
+      if (!data || !overlay) return;
+
+      savedScrollY = window.scrollY;
+      document.body.classList.add('modal-open');
+      document.body.style.top = `-${savedScrollY}px`;
+
+      overlay.scrollTop = 0;
+
+      // Format material with smaller font for details in parentheses
+      let materialText = data.material;
+      if (data.materialDetails) {
+        materialText += ` <span class="material-details">${data.materialDetails}</span>`;
       }
 
-      window.addEventListener('hashchange', route);
-      window.addEventListener('DOMContentLoaded', route);
-    })();
+      if (detailMeta) detailMeta.innerHTML = `${data.title} • ${materialText} • ${data.size}`;
+      if (detailDesc) detailDesc.textContent = data.description;
+      renderDetailImages(artId, data.images);
+
+      overlay.classList.add('open');
+      overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeDetail() {
+      if (!overlay) return;
+
+      overlay.classList.remove('open');
+      overlay.setAttribute('aria-hidden', 'true');
+
+      setTimeout(() => {
+        document.body.classList.remove('modal-open');
+        const top = document.body.style.top;
+        document.body.style.top = '';
+        const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+        window.scrollTo(0, restoreY);
+      }, 350);
+    }
+
+    document.addEventListener('click', (e) => {
+      const card = e.target.closest('.work-card[data-artwork]');
+      if (card) {
+        e.preventDefault();
+        openDetail(card.getAttribute('data-artwork'));
+      }
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeDetail);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
+        closeDetail();
+      }
+    });
+  })();
   </script>
 </body>
 </html>
