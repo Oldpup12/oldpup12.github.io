@@ -832,6 +832,10 @@
       contact: document.querySelector('.link-contact'),
     };
 
+    // Global variables for hint fade
+    let hintTimeout = null;
+    let hintScrollHandler = null;
+
     function setActiveLink(view) {
       Object.keys(links).forEach(key => {
         if (links[key]) {
@@ -863,8 +867,12 @@
       if (view === 'work') {
         requestAnimationFrame(() => {
           animateYearsOnScroll();
-          setupWorkHintFade();
         });
+        // Setup hint fade after a small delay to ensure animations start
+        setTimeout(setupWorkHintFade, 500);
+      } else {
+        // Clean up when leaving work page
+        cleanupHintListeners();
       }
     }
 
@@ -897,43 +905,49 @@
     }
 
     // ========== WORK HINT FADE ==========
-    let hintTimeout = null;
-    let hintScrollListener = null;
+    function cleanupHintListeners() {
+      if (hintTimeout) {
+        clearTimeout(hintTimeout);
+        hintTimeout = null;
+      }
+      if (hintScrollHandler) {
+        window.removeEventListener('scroll', hintScrollHandler);
+        document.removeEventListener('wheel', hintScrollHandler);
+        document.removeEventListener('touchmove', hintScrollHandler);
+        hintScrollHandler = null;
+      }
+    }
 
     function setupWorkHintFade() {
       const workHint = document.getElementById('workHint');
       if (!workHint) return;
 
-      // Clear any existing timeout or listener
-      if (hintTimeout) clearTimeout(hintTimeout);
-      if (hintScrollListener) {
-        window.removeEventListener('scroll', hintScrollListener);
-      }
+      // Clean up any existing listeners
+      cleanupHintListeners();
 
       // Reset hint visibility
       workHint.classList.remove('fade-out');
 
-      let hasScrolled = false;
+      let hasFaded = false;
 
-      // Scroll listener
-      hintScrollListener = function() {
-        if (!hasScrolled) {
-          hasScrolled = true;
+      function fadeOutHint() {
+        if (!hasFaded) {
+          hasFaded = true;
           workHint.classList.add('fade-out');
-          window.removeEventListener('scroll', hintScrollListener);
-          if (hintTimeout) clearTimeout(hintTimeout);
+          cleanupHintListeners();
         }
-      };
+      }
 
-      window.addEventListener('scroll', hintScrollListener);
+      // Create the scroll handler
+      hintScrollHandler = fadeOutHint;
+
+      // Listen to multiple scroll events for better detection
+      window.addEventListener('scroll', hintScrollHandler, { passive: true });
+      document.addEventListener('wheel', hintScrollHandler, { passive: true });
+      document.addEventListener('touchmove', hintScrollHandler, { passive: true });
 
       // 4 second timeout
-      hintTimeout = setTimeout(() => {
-        if (!hasScrolled) {
-          workHint.classList.add('fade-out');
-          window.removeEventListener('scroll', hintScrollListener);
-        }
-      }, 4000);
+      hintTimeout = setTimeout(fadeOutHint, 4000);
     }
 
     // ========== ARTWORK DETAIL OVERLAY ==========
