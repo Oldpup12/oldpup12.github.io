@@ -979,6 +979,7 @@
     };
 
     let savedScrollY = 0;
+    let detailHistoryPushed = false;
 
     function renderDetailImages(artId, images) {
       if (!detailGrid) return;
@@ -1025,9 +1026,13 @@
 
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
+
+      // Push a state to history so back button can close the detail
+      history.pushState({ detailOpen: true, artId: artId }, '', location.href);
+      detailHistoryPushed = true;
     }
 
-    function closeDetail() {
+    function closeDetail(skipHistory = false) {
       if (!overlay) return;
 
       overlay.classList.remove('open');
@@ -1040,7 +1045,23 @@
         const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
         window.scrollTo(0, restoreY);
       }, 350);
+
+      // If we pushed history and user closed via × button, go back in history
+      if (detailHistoryPushed && !skipHistory) {
+        detailHistoryPushed = false;
+        history.back();
+      } else {
+        detailHistoryPushed = false;
+      }
     }
+
+    // Listen for browser back/forward button
+    window.addEventListener('popstate', (event) => {
+      // If detail overlay is open and user pressed back, close it
+      if (overlay && overlay.classList.contains('open')) {
+        closeDetail(true); // skipHistory = true to avoid calling history.back() again
+      }
+    });
 
     document.addEventListener('click', (e) => {
       const card = e.target.closest('.work-card[data-artwork]');
@@ -1050,11 +1071,11 @@
       }
     });
 
-    if (closeBtn) closeBtn.addEventListener('click', closeDetail);
+    if (closeBtn) closeBtn.addEventListener('click', () => closeDetail(false));
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
-        closeDetail();
+        closeDetail(false);
       }
     });
   })();
