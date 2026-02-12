@@ -878,8 +878,8 @@
         teardownWorkHint();
       };
 
-      // Hide after 4 seconds
-      workHintTimer = setTimeout(hide, 4000);
+      // Work-Hint Hide after 3 seconds ( 3s , 4s , 5s )
+      workHintTimer = setTimeout(hide, 3000);
 
       // Hide on first sign of scrolling intent (more reliable than scroll alone)
       window.addEventListener('wheel', hide, { passive: true, signal: controller.signal });
