@@ -184,6 +184,19 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
+    /* Work hint text */
+    .work-hint {
+      font-size: 0.95rem;
+      opacity: 0.65;
+      letter-spacing: 0.3px;
+      margin-top: 0.5rem;
+      transition: opacity 1s ease;
+    }
+    .work-hint.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .work-wrapper {
       width: min(1100px, 92vw);
       display: flex;
@@ -461,6 +474,8 @@
 
       .main.work { padding-top: 6.25rem; }
 
+      .work-hint { font-size: 0.9rem; }
+
       .work-year {
         grid-template-columns: 80px 1fr;
         gap: 1.5rem;
@@ -568,6 +583,7 @@
     #contact .contact-center,
     #contact .contact-center .contact,
     #work .section-title,
+    #work .work-hint,
     #work .work-wrapper {
       opacity: 0;
     }
@@ -582,7 +598,8 @@
     #contact.animate .contact-center .contact:nth-child(2) { animation: fadeIn 0.8s ease forwards 0.45s; }
 
     #work.animate .section-title { animation: fadeIn 0.8s ease forwards 0s; }
-    #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.15s; }
+    #work.animate .work-hint { animation: fadeIn 0.8s ease forwards 0.15s; }
+    #work.animate .work-wrapper { animation: fadeIn 0.8s ease forwards 0.3s; }
   </style>
 </head>
 
@@ -634,6 +651,7 @@
     <div class="container">
       <div class="main work">
         <h2 class="section-title" id="work-title">Work</h2>
+        <p class="work-hint" id="workHint">Click on any piece to learn more</p>
 
         <div class="work-wrapper">
           <!-- 2026 -->
@@ -845,6 +863,7 @@
       if (view === 'work') {
         requestAnimationFrame(() => {
           animateYearsOnScroll();
+          setupWorkHintFade();
         });
       }
     }
@@ -875,6 +894,46 @@
       }, { threshold: 0.15 });
 
       years.forEach(y => yearObserver.observe(y));
+    }
+
+    // ========== WORK HINT FADE ==========
+    let hintTimeout = null;
+    let hintScrollListener = null;
+
+    function setupWorkHintFade() {
+      const workHint = document.getElementById('workHint');
+      if (!workHint) return;
+
+      // Clear any existing timeout or listener
+      if (hintTimeout) clearTimeout(hintTimeout);
+      if (hintScrollListener) {
+        window.removeEventListener('scroll', hintScrollListener);
+      }
+
+      // Reset hint visibility
+      workHint.classList.remove('fade-out');
+
+      let hasScrolled = false;
+
+      // Scroll listener
+      hintScrollListener = function() {
+        if (!hasScrolled) {
+          hasScrolled = true;
+          workHint.classList.add('fade-out');
+          window.removeEventListener('scroll', hintScrollListener);
+          if (hintTimeout) clearTimeout(hintTimeout);
+        }
+      };
+
+      window.addEventListener('scroll', hintScrollListener);
+
+      // 4 second timeout
+      hintTimeout = setTimeout(() => {
+        if (!hasScrolled) {
+          workHint.classList.add('fade-out');
+          window.removeEventListener('scroll', hintScrollListener);
+        }
+      }, 4000);
     }
 
     // ========== ARTWORK DETAIL OVERLAY ==========
