@@ -230,8 +230,8 @@
       align-items: start;
       opacity: 0;
       transition: opacity 0.8s ease;
+      opacity: 1; /* Visible by default */
     }
-    .work-year.in-view { opacity: 1; }
 
     /* Timeline column: MUST stretch full height for sticky + line to work */
     .work-timeline {
@@ -343,6 +343,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.35s ease;
+      overscroll-behavior: contain;
     }
     .work-detail-overlay.open {
       opacity: 1;
@@ -457,12 +458,6 @@
       text-align: center;
       padding: 1rem;
       min-height: 200px;
-    }
-
-    body.modal-open {
-      position: fixed;
-      width: 100%;
-      overflow: hidden;
     }
 
     /* ---- Desktop footer ---- */
@@ -926,9 +921,6 @@
       setActiveLink(view);
 
       if (view === 'work') {
-        requestAnimationFrame(() => {
-          animateYearsOnScroll();
-        });
         setupWorkHint();
       } else {
         teardownWorkHint();
@@ -942,26 +934,6 @@
 
     window.addEventListener('hashchange', route);
     window.addEventListener('DOMContentLoaded', route);
-
-    // ========== WORK: YEAR FADE-IN ON SCROLL ==========
-    let yearObserver = null;
-
-    function animateYearsOnScroll() {
-      const years = document.querySelectorAll('.work-year');
-      if (!years.length) return;
-
-      if (yearObserver) yearObserver.disconnect();
-
-      yearObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('in-view');
-          }
-        });
-      }, { threshold: 0.15 });
-
-      years.forEach(y => yearObserver.observe(y));
-    }
 
     // ========== ARTWORK DETAIL OVERLAY ==========
     const overlay = document.getElementById('workDetailOverlay');
@@ -1092,43 +1064,52 @@
     function openDetail(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
-
-      savedScrollY = window.scrollY;
+    
+      // Save scroll position
+      savedScrollY = window.pageYOffset || window.scrollY;
+      
+      // Prevent background scrolling
       document.body.classList.add('modal-open');
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
       document.body.style.top = `-${savedScrollY}px`;
-
+      document.body.style.width = '100%';
+    
       overlay.scrollTop = 0;
-
+    
       let materialText = data.material;
       if (data.materialDetails) {
         materialText += ` <span class="material-details">${data.materialDetails}</span>`;
       }
-
+    
       if (detailMeta) detailMeta.innerHTML = `${data.title} • ${materialText} • ${data.size}`;
       if (detailDesc) detailDesc.textContent = data.description;
       renderDetailImages(artId, data.images);
-
+    
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
-
+    
       history.pushState({ detailOpen: true, artId: artId }, '', location.href);
       detailHistoryPushed = true;
     }
-
+    
     function closeDetail(skipHistory = false) {
       if (!overlay) return;
-
+    
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
-
-      setTimeout(() => {
-        document.body.classList.remove('modal-open');
-        const top = document.body.style.top;
-        document.body.style.top = '';
-        const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
-        window.scrollTo(0, restoreY);
-      }, 350);
-
+    
+      // Restore scroll position
+      const scrollY = savedScrollY;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.overflow = '';
+      document.body.style.width = '';
+      document.body.classList.remove('modal-open');
+      
+      // Restore scroll immediately
+      window.scrollTo(0, scrollY);
+    
       if (detailHistoryPushed && !skipHistory) {
         detailHistoryPushed = false;
         history.back();
