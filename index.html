@@ -184,31 +184,6 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
-    /* Hint under Work heading (transition-based, reliable) */
-    .work-hint {
-      font-size: 1.05rem;
-      letter-spacing: 0.3px;
-      opacity: 0;
-      transform: translateY(6px);
-      transition: opacity 800ms ease, transform 800ms ease;
-      user-select: none;
-      pointer-events: none;
-      margin-top: -1rem;
-      margin-bottom: 0.25rem;
-      text-align: center;
-      width: min(1100px, 92vw);
-    }
-    #work.animate .work-hint {
-      opacity: 0.62;
-      transform: translateY(0);
-    }
-    #work .work-hint.is-hidden {
-      opacity: 0;
-      transform: translateY(-6px);
-    }
-    @media (max-width: 850px) { .work-hint { font-size: 1.1rem; } }
-    @media (prefers-reduced-motion: reduce) { .work-hint { transition: none; } }
-
     .work-wrapper {
       width: min(1100px, 92vw);
       display: flex;
@@ -222,8 +197,10 @@
       grid-template-columns: 120px 1fr;
       gap: 3rem;
       align-items: start;
-      opacity: 1; /* visible immediately (avoids mobile IO “only appears after scroll”) */
+      opacity: 0;
+      transition: opacity 0.8s ease;
     }
+    .work-year.in-view { opacity: 1; }
 
     /* Timeline column: MUST stretch full height for sticky + line to work */
     .work-timeline {
@@ -284,10 +261,24 @@
     }
     .work-card:hover .work-media { transform: scale(1.05); }
 
+    /* Image fills width, height auto-scales based on natural aspect ratio */
     .work-media img {
       width: 100%;
       height: auto;
       display: block;
+    }
+
+    .work-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 1.05rem;
+      letter-spacing: 0.4px;
+      text-align: center;
+      padding: 1rem;
     }
 
     .work-size {
@@ -302,6 +293,12 @@
       backdrop-filter: blur(4px);
     }
 
+    /* Remove aspect ratio classes since we're using natural dimensions */
+    .portrait { min-height: 200px; }
+    .square { min-height: 200px; }
+    .landscape { min-height: 200px; }
+    .wide { min-height: 200px; }
+
     /* ---- Artwork detail overlay ---- */
     .work-detail-overlay {
       position: fixed;
@@ -315,7 +312,6 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.35s ease;
-      overscroll-behavior: contain;
     }
     .work-detail-overlay.open {
       opacity: 1;
@@ -350,8 +346,12 @@
       opacity: 0.95;
       margin-bottom: 0.6rem;
     }
-    .detail-meta .material-details { font-size: 0.85em; }
-
+    
+    /* Smaller font for material details in parentheses */
+    .detail-meta .material-details {
+      font-size: 0.85em;
+    }
+    
     .detail-desc {
       font-size: 1.05rem;
       line-height: 1.65;
@@ -395,23 +395,43 @@
       break-inside: avoid;
       margin-bottom: 2rem;
     }
-
+    
     /* Desktop: Force column breaks for specific artworks */
-    #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
-    #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
-
+    /* WhiteLineWalls: Column 1 has 1,2,3 then Column 2 has 4,5 */
+    #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) {
+      break-after: column;
+    }
+    
+    /* WallPins: Column 1 has 1,2 then Column 2 has 3,4 */
+    #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) {
+      break-after: column;
+    }
+    
+    /* Detail images also use natural dimensions */
     .detail-media img {
       width: 100%;
       height: auto;
       display: block;
     }
+    
+    .detail-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.55);
+      font-size: 1.05rem;
+      letter-spacing: 0.4px;
+      text-align: center;
+      padding: 1rem;
+      min-height: 200px;
+    }
 
-    /* ---- Scroll lock (NEW) ----
-       Don’t use position:fixed on body; that’s the thing that tends to “lose” scroll on iOS/Chrome. */
-    html.modal-open,
     body.modal-open {
+      position: fixed;
+      width: 100%;
       overflow: hidden;
-      height: 100%;
     }
 
     /* ---- Desktop footer ---- */
@@ -440,8 +460,15 @@
       .top-nav a { font-size: 1rem; }
 
       .main.work { padding-top: 6.25rem; }
-      .work-year { grid-template-columns: 80px 1fr; gap: 1.5rem; }
-      .work-year-label { top: 6.25rem; font-size: 1.35rem; }
+
+      .work-year {
+        grid-template-columns: 80px 1fr;
+        gap: 1.5rem;
+      }
+      .work-year-label {
+        top: 6.25rem;
+        font-size: 1.35rem;
+      }
       .work-timeline-line { top: 2.8rem; }
 
       /* Mobile: single column */
@@ -451,7 +478,9 @@
         display: flex;
         flex-direction: column;
       }
-      .work-card { margin-bottom: 1.25rem; }
+      .work-card {
+        margin-bottom: 1.25rem;
+      }
 
       /* Mobile: artwork order for 2025 - PinkLines, PlasterChunk, RockLines, WhiteLineWalls */
       .work-card[data-artwork="2025-1"] { order: 1; }
@@ -466,18 +495,29 @@
         display: flex;
         flex-direction: column;
       }
-      .detail-media { margin-bottom: 1.25rem; }
+      
+      .detail-media {
+        margin-bottom: 1.25rem;
+      }
+
       .work-detail-panel { padding-top: 6.75rem; }
       .detail-meta { font-size: 1.35rem; }
-
+      
       /* Mobile: Left-align detail text */
-      .detail-text { text-align: left; }
+      .detail-text {
+        text-align: left;
+      }
 
       /* Mobile: Remove desktop column breaks */
-      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: auto; }
-      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: auto; }
+      #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) {
+        break-after: auto;
+      }
+      #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) {
+        break-after: auto;
+      }
 
       /* Mobile: Custom image orders using flexbox order property */
+      /* ClayVag: 1, 4, 2, 5, 3, 6 */
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(2) { order: 3; }
@@ -485,6 +525,7 @@
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(3) { order: 5; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(6) { order: 6; }
 
+      /* PinkLines: 1, 4, 2, 5, 3, 6 */
       #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(2) { order: 3; }
@@ -492,20 +533,24 @@
       #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(3) { order: 5; }
       #detailGrid[data-artwork="2025-1"] .detail-media:nth-child(6) { order: 6; }
 
+      /* RockLines: 1, 3, 2 */
       #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(3) { order: 2; }
       #detailGrid[data-artwork="2025-2"] .detail-media:nth-child(2) { order: 3; }
 
+      /* WhiteLineWalls: 1, 4, 2, 5, 3 */
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(2) { order: 3; }
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(5) { order: 4; }
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { order: 5; }
 
+      /* BlackLines: 1, 3, 2 */
       #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(3) { order: 2; }
       #detailGrid[data-artwork="2024-1"] .detail-media:nth-child(2) { order: 3; }
 
+      /* WallPins: 1, 3, 2, 4 */
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(3) { order: 2; }
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { order: 3; }
@@ -589,8 +634,6 @@
     <div class="container">
       <div class="main work">
         <h2 class="section-title" id="work-title">Work</h2>
-
-        <p class="work-hint" id="workHint">Click any artwork to learn more.</p>
 
         <div class="work-wrapper">
           <!-- 2026 -->
@@ -681,7 +724,7 @@
                 <div class="detail-meta" id="detailMeta">Title • Material • Size</div>
                 <div class="detail-desc" id="detailDesc">Description</div>
               </div>
-              <button class="detail-close" id="detailClose" aria-label="Close">×</button>
+              <button class="detail-close" id="detailClose">×</button>
             </div>
 
             <div id="detailGrid"></div>
@@ -762,9 +805,6 @@
 
   <script>
   (function () {
-    // Helps reduce browser interference with scroll position during history navigation.
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-
     // ========== ROUTER ==========
     const views = ['home', 'work', 'about', 'contact'];
     const links = {
@@ -783,14 +823,8 @@
       });
     }
 
-    // Only scroll-to-top when the VIEW changes (home -> work, work -> about, etc.)
-    let currentView = null;
-
     function showView(view) {
-      const viewChanged = (view !== currentView);
-      currentView = view;
-
-      if (viewChanged) window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
 
       views.forEach(v => {
         const el = document.getElementById(v);
@@ -808,74 +842,42 @@
 
       setActiveLink(view);
 
-      if (view === 'work') setupWorkHint();
-      else teardownWorkHint();
-    }
-
-    function parseHash() {
-      const raw = (location.hash || '#home').slice(1); // remove "#"
-      const cleaned = raw.trim();
-
-      // Detail route: "#work/2025-1"
-      if (cleaned.toLowerCase().startsWith('work/')) {
-        return { view: 'work', artId: cleaned.split('/').slice(1).join('/') || null };
-      }
-
-      // Work base route: "#work"
-      if (cleaned.toLowerCase() === 'work') {
-        return { view: 'work', artId: null };
-      }
-
-      const lower = cleaned.toLowerCase();
-      return { view: views.includes(lower) ? lower : 'home', artId: null };
-    }
-
-    // ========== WORK HINT (unchanged) ==========
-    let workHintTimer = null;
-    let workHintController = null;
-
-    function teardownWorkHint() {
-      if (workHintTimer) {
-        clearTimeout(workHintTimer);
-        workHintTimer = null;
-      }
-      if (workHintController) {
-        workHintController.abort();
-        workHintController = null;
+      if (view === 'work') {
+        requestAnimationFrame(() => {
+          animateYearsOnScroll();
+        });
       }
     }
 
-    function setupWorkHint() {
-      const hint = document.getElementById('workHint');
-      if (!hint) return;
-
-      teardownWorkHint();
-      hint.classList.remove('is-hidden');
-
-      const controller = new AbortController();
-      workHintController = controller;
-
-      const hide = () => {
-        if (!hint.classList.contains('is-hidden')) hint.classList.add('is-hidden');
-        teardownWorkHint();
-      };
-
-      workHintTimer = setTimeout(hide, 3000);
-
-      window.addEventListener('wheel', hide, { passive: true, signal: controller.signal });
-      window.addEventListener('touchmove', hide, { passive: true, signal: controller.signal });
-
-      window.addEventListener('scroll', () => {
-        if ((window.scrollY || 0) > 4) hide();
-      }, { passive: true, signal: controller.signal });
-
-      window.addEventListener('keydown', (e) => {
-        const keys = ['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Home', 'End'];
-        if (keys.includes(e.key)) hide();
-      }, { signal: controller.signal });
+    function route() {
+      const hash = (location.hash || '').replace('#', '').toLowerCase();
+      showView(views.includes(hash) ? hash : 'home');
     }
 
-    // ========== ARTWORK DETAIL OVERLAY (NEW: hash-based modal routing) ==========
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', route);
+
+    // ========== WORK: YEAR FADE-IN ON SCROLL ==========
+    let yearObserver = null;
+
+    function animateYearsOnScroll() {
+      const years = document.querySelectorAll('.work-year');
+      if (!years.length) return;
+
+      if (yearObserver) yearObserver.disconnect();
+
+      yearObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+          }
+        });
+      }, { threshold: 0.15 });
+
+      years.forEach(y => yearObserver.observe(y));
+    }
+
+    // ========== ARTWORK DETAIL OVERLAY ==========
     const overlay = document.getElementById('workDetailOverlay');
     const closeBtn = document.getElementById('detailClose');
     const detailMeta = document.getElementById('detailMeta');
@@ -976,55 +978,42 @@
       }
     };
 
-    const WORK_SCROLL_KEY = 'workScrollBeforeDetail';
-    let currentArtId = null;
+    let savedScrollY = 0;
 
     function renderDetailImages(artId, images) {
       if (!detailGrid) return;
 
       detailGrid.setAttribute('data-artwork', artId);
+
       detailGrid.innerHTML = images.map((img) => {
-        if (!img.src) return '';
-        return `
-          <div class="detail-media">
-            <img src="${img.src}" alt="Artwork detail" />
-          </div>
-        `;
+        if (img.src) {
+          return `
+            <div class="detail-media">
+              <img src="${img.src}" alt="Artwork detail" />
+            </div>
+          `;
+        } else {
+          // Placeholder
+          return `
+            <div class="detail-media ${img.ratio}">
+              <div class="detail-placeholder">${img.label}</div>
+            </div>
+          `;
+        }
       }).join('');
     }
 
-    function lockScroll() {
-      document.documentElement.classList.add('modal-open');
-      document.body.classList.add('modal-open');
-    }
-
-    function unlockScroll() {
-      document.documentElement.classList.remove('modal-open');
-      document.body.classList.remove('modal-open');
-    }
-
-    function restoreWorkScroll() {
-      const y = parseInt(sessionStorage.getItem(WORK_SCROLL_KEY) || '0', 10) || 0;
-
-      // Multiple attempts beats iOS/Safari “helpful” anchor scrolling back to #work.
-      const tries = [0, 16, 64, 160, 320];
-      tries.forEach(ms => {
-        setTimeout(() => window.scrollTo(0, y), ms);
-      });
-    }
-
-    function openDetailModal(artId) {
+    function openDetail(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
 
-      // Snapshot the current Work scroll position BEFORE we open the modal.
-      const y = window.pageYOffset || window.scrollY || 0;
-      sessionStorage.setItem(WORK_SCROLL_KEY, String(y));
-
-      currentArtId = artId;
+      savedScrollY = window.scrollY;
+      document.body.classList.add('modal-open');
+      document.body.style.top = `-${savedScrollY}px`;
 
       overlay.scrollTop = 0;
 
+      // Format material with smaller font for details in parentheses
       let materialText = data.material;
       if (data.materialDetails) {
         materialText += ` <span class="material-details">${data.materialDetails}</span>`;
@@ -1032,96 +1021,40 @@
 
       if (detailMeta) detailMeta.innerHTML = `${data.title} • ${materialText} • ${data.size}`;
       if (detailDesc) detailDesc.textContent = data.description;
-
       renderDetailImages(artId, data.images);
-
-      lockScroll();
 
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
     }
 
-    function closeDetailModalAndRestore() {
+    function closeDetail() {
       if (!overlay) return;
 
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
 
-      currentArtId = null;
-
-      // Wait for your 0.35s fade transition, then unlock + restore scroll.
       setTimeout(() => {
-        unlockScroll();
-        restoreWorkScroll();
+        document.body.classList.remove('modal-open');
+        const top = document.body.style.top;
+        document.body.style.top = '';
+        const restoreY = top ? Math.abs(parseInt(top, 10)) : savedScrollY;
+        window.scrollTo(0, restoreY);
       }, 350);
     }
 
-    function ensureDetailStateForRoute(artId) {
-      // If route is "#work/<id>", modal must be open.
-      if (artId) {
-        if (!overlay.classList.contains('open') || currentArtId !== artId) {
-          openDetailModal(artId);
-        }
-        return;
-      }
-
-      // If route is "#work" (no artId), modal must be closed and scroll restored.
-      if (overlay.classList.contains('open')) {
-        closeDetailModalAndRestore();
-      }
-    }
-
-    // Route handler (single source of truth)
-    function route() {
-      const { view, artId } = parseHash();
-
-      // If leaving work, close modal immediately (no restore needed)
-      if (view !== 'work' && overlay && overlay.classList.contains('open')) {
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-        unlockScroll();
-        currentArtId = null;
-      }
-
-      showView(view);
-
-      if (view === 'work') {
-        ensureDetailStateForRoute(artId);
-      }
-    }
-
-    window.addEventListener('hashchange', route);
-    window.addEventListener('DOMContentLoaded', route);
-
-    // Clicking a work card navigates to "#work/<artId>" (adds history entry).
     document.addEventListener('click', (e) => {
       const card = e.target.closest('.work-card[data-artwork]');
-      if (!card) return;
-
-      e.preventDefault();
-      const artId = card.getAttribute('data-artwork');
-      if (!artId) return;
-
-      location.hash = `work/${artId}`;
+      if (card) {
+        e.preventDefault();
+        openDetail(card.getAttribute('data-artwork'));
+      }
     });
 
-    // X button behaves like the browser Back button (so you don’t create a new extra history entry).
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        if ((location.hash || '').toLowerCase().startsWith('#work/')) {
-          history.back();
-        } else {
-          // fallback
-          location.hash = 'work';
-        }
-      });
-    }
+    if (closeBtn) closeBtn.addEventListener('click', closeDetail);
 
-    // Escape closes modal via history (desktop nice-to-have)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
-        if ((location.hash || '').toLowerCase().startsWith('#work/')) history.back();
-        else location.hash = 'work';
+        closeDetail();
       }
     });
   })();
