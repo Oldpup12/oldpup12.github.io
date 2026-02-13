@@ -184,7 +184,7 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
-    /* Hint under Work heading (transition-based, reliable) */
+    /* Hint under Work heading */
     .work-hint {
       font-size: 1.05rem;
       letter-spacing: 0.3px;
@@ -220,16 +220,15 @@
       gap: 4rem;
     }
 
-    /* Year block: left timeline, right artworks */
+    /* Year block: left timeline, right artworks (always visible) */
     .work-year {
       display: grid;
       grid-template-columns: 120px 1fr;
       gap: 3rem;
       align-items: start;
-      opacity: 1; /* visible immediately */
+      opacity: 1;
     }
 
-    /* Timeline column */
     .work-timeline {
       position: relative;
       align-self: stretch;
@@ -238,7 +237,6 @@
       align-items: center;
     }
 
-    /* Sticky year label */
     .work-year-label {
       position: -webkit-sticky;
       position: sticky;
@@ -252,7 +250,6 @@
       padding-bottom: 1rem;
     }
 
-    /* Vertical line below year */
     .work-timeline-line {
       position: absolute;
       top: 3.5rem;
@@ -264,7 +261,6 @@
       border-radius: 2px;
     }
 
-    /* PURE CSS COLUMN STACKING using CSS columns property */
     .work-grid {
       column-count: 2;
       column-gap: 2rem;
@@ -400,7 +396,6 @@
       margin-bottom: 2rem;
     }
 
-    /* Desktop: Force column breaks for specific artworks */
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
 
@@ -473,7 +468,7 @@
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: auto; }
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: auto; }
 
-      /* Mobile: Custom image orders using flexbox order property */
+      /* Mobile: Custom image orders */
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(2) { order: 3; }
@@ -758,7 +753,7 @@
 
   <script>
   (function () {
-    // Prevent browser auto scroll restoration fighting our manual restore (mobile especially)
+    // Manual scroll restoration helps, but some mobile browsers ignore it; we also store scroll in history state.
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     // ========== ROUTER ==========
@@ -769,6 +764,59 @@
       about: document.querySelector('.link-about'),
       contact: document.querySelector('.link-contact'),
     };
+
+    function setActiveLink(view) {
+      Object.keys(links).forEach(key => {
+        if (links[key]) {
+          links[key].classList.toggle('active', view === key);
+          links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
+        }
+      });
+    }
+
+    // Keep the current view so we don't accidentally scroll-to-top unless view actually changed.
+    let currentView = null;
+
+    // Ensure the current history entry has a state object (so back/forward has somewhere to store workScrollY).
+    function stampViewState(view) {
+      const prev = history.state || {};
+      const next = { ...prev, view };
+      if (view === 'work') next.workScrollY = (window.pageYOffset || window.scrollY || 0);
+      history.replaceState(next, '', location.href);
+    }
+
+    function showView(view) {
+      if (view !== currentView) window.scrollTo(0, 0);
+      currentView = view;
+
+      views.forEach(v => {
+        const el = document.getElementById(v);
+        if (!el) return;
+        el.classList.toggle('active', v === view);
+
+        if (v === view) {
+          el.classList.remove('animate');
+          void el.offsetWidth;
+          el.classList.add('animate');
+        } else {
+          el.classList.remove('animate');
+        }
+      });
+
+      setActiveLink(view);
+      stampViewState(view);
+
+      if (view === 'work') setupWorkHint();
+      else teardownWorkHint();
+    }
+
+    function route() {
+      const hash = (location.hash || '').replace('#', '').toLowerCase();
+      showView(views.includes(hash) ? hash : 'home');
+    }
+
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', route);
 
     // ========== WORK HINT (robust) ==========
     let workHintTimer = null;
@@ -804,60 +852,14 @@
 
       window.addEventListener('wheel', hide, { passive: true, signal: controller.signal });
       window.addEventListener('touchmove', hide, { passive: true, signal: controller.signal });
-
-      window.addEventListener('scroll', () => {
-        if ((window.scrollY || 0) > 4) hide();
-      }, { passive: true, signal: controller.signal });
-
+      window.addEventListener('scroll', () => { if ((window.scrollY || 0) > 4) hide(); },
+        { passive: true, signal: controller.signal }
+      );
       window.addEventListener('keydown', (e) => {
         const keys = ['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Home', 'End'];
         if (keys.includes(e.key)) hide();
       }, { signal: controller.signal });
     }
-
-    function setActiveLink(view) {
-      Object.keys(links).forEach(key => {
-        if (links[key]) {
-          links[key].classList.toggle('active', view === key);
-          links[key].setAttribute('aria-current', view === key ? 'page' : 'false');
-        }
-      });
-    }
-
-    // Avoid accidental scroll-to-top if showView gets called without changing the view
-    let currentView = null;
-
-    function showView(view) {
-      if (view !== currentView) window.scrollTo(0, 0);
-      currentView = view;
-
-      views.forEach(v => {
-        const el = document.getElementById(v);
-        if (!el) return;
-        el.classList.toggle('active', v === view);
-
-        if (v === view) {
-          el.classList.remove('animate');
-          void el.offsetWidth;
-          el.classList.add('animate');
-        } else {
-          el.classList.remove('animate');
-        }
-      });
-
-      setActiveLink(view);
-
-      if (view === 'work') setupWorkHint();
-      else teardownWorkHint();
-    }
-
-    function route() {
-      const hash = (location.hash || '').replace('#', '').toLowerCase();
-      showView(views.includes(hash) ? hash : 'home');
-    }
-
-    window.addEventListener('hashchange', route);
-    window.addEventListener('DOMContentLoaded', route);
 
     // ========== ARTWORK DETAIL OVERLAY ==========
     const overlay = document.getElementById('workDetailOverlay');
@@ -965,34 +967,31 @@
 
     function renderDetailImages(artId, images) {
       if (!detailGrid) return;
-
       detailGrid.setAttribute('data-artwork', artId);
 
       detailGrid.innerHTML = images.map((img) => {
-        if (img.src) {
-          return `
-            <div class="detail-media">
-              <img src="${img.src}" alt="Artwork detail" />
-            </div>
-          `;
-        }
-        return '';
+        if (!img.src) return '';
+        return `
+          <div class="detail-media">
+            <img src="${img.src}" alt="Artwork detail" />
+          </div>
+        `;
       }).join('');
     }
 
     function restoreScroll(y) {
-      // Some mobile browsers ignore the first scrollTo right after unlocking body.
       requestAnimationFrame(() => {
         window.scrollTo(0, y);
         requestAnimationFrame(() => window.scrollTo(0, y));
         setTimeout(() => window.scrollTo(0, y), 60);
+        setTimeout(() => window.scrollTo(0, y), 220);
       });
     }
 
-    function lockBodyScroll() {
+    function lockBodyScroll(y) {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
-      document.body.style.top = `-${savedScrollY}px`;
+      document.body.style.top = `-${y}px`;
       document.body.style.width = '100%';
     }
 
@@ -1003,13 +1002,40 @@
       document.body.style.width = '';
     }
 
+    // --- Key fix: write current Work scroll into the Work history entry ---
+    let scrollSaveRAF = null;
+    function saveWorkScrollToHistory() {
+      if (currentView !== 'work') return;
+      if (overlay && overlay.classList.contains('open')) return;
+
+      const y = window.pageYOffset || window.scrollY || 0;
+      const prev = history.state || {};
+      const next = { ...prev, view: 'work', workScrollY: y };
+
+      // Avoid needless replaceState churn
+      if (prev.view === 'work' && prev.workScrollY === y) return;
+
+      history.replaceState(next, '', location.href);
+    }
+
+    function onScroll() {
+      if (scrollSaveRAF) return;
+      scrollSaveRAF = requestAnimationFrame(() => {
+        scrollSaveRAF = null;
+        saveWorkScrollToHistory();
+      });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
     function openDetail(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
 
-      // Save scroll position BEFORE lock
+      // Save + stamp Work scroll into THIS history entry before pushing the modal entry
       savedScrollY = window.pageYOffset || window.scrollY || 0;
-      lockBodyScroll();
+      saveWorkScrollToHistory();
+
+      lockBodyScroll(savedScrollY);
 
       overlay.scrollTop = 0;
 
@@ -1025,34 +1051,44 @@
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Push 1 history entry so browser back closes the modal
+      // Push 1 entry so Back closes the modal
       if (!detailHistoryPushed) {
         history.pushState({ detailOpen: true, artId }, '', location.href);
         detailHistoryPushed = true;
       }
     }
 
-    function closeDetail() {
+    function closeDetail(restoreY) {
       if (!overlay) return;
 
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
 
       unlockBodyScroll();
-      restoreScroll(savedScrollY);
+
+      const y = (typeof restoreY === 'number') ? restoreY : savedScrollY;
+      restoreScroll(y);
 
       detailHistoryPushed = false;
+
+      // After closing, re-stamp the history scroll state (so subsequent backs/forwards are consistent)
+      requestAnimationFrame(() => saveWorkScrollToHistory());
     }
 
     function requestCloseDetail() {
-      // Prefer closing via history so X and Back share the same path.
-      if (detailHistoryPushed) history.back();
-      else closeDetail();
+      if (detailHistoryPushed) history.back();  // popstate will close
+      else closeDetail(savedScrollY);
     }
 
-    window.addEventListener('popstate', () => {
+    // IMPORTANT: use destination history state's stored scrollY when closing via back
+    window.addEventListener('popstate', (e) => {
       if (overlay && overlay.classList.contains('open')) {
-        closeDetail();
+        const restoreY = (e && e.state && typeof e.state.workScrollY === 'number')
+          ? e.state.workScrollY
+          : savedScrollY;
+        closeDetail(restoreY);
+      } else {
+        // If user navigates with back/forward between hashes, router will handle via hashchange.
       }
     });
 
@@ -1061,11 +1097,7 @@
       if (card) {
         e.preventDefault();
         openDetail(card.getAttribute('data-artwork'));
-        return;
       }
-
-      // Optional: click outside panel to close (comment out if you don't want this)
-      // if (overlay && overlay.classList.contains('open') && e.target === overlay) requestCloseDetail();
     });
 
     if (closeBtn) closeBtn.addEventListener('click', requestCloseDetail);
