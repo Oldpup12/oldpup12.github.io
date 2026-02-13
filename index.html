@@ -768,29 +768,39 @@
     function showView(view) {
       const viewChanged = (view !== currentView);
       currentView = view;
-
-      // IMPORTANT: only scroll to top when changing the MAIN view.
+    
+      // Only scroll to top when switching main views
       if (viewChanged) window.scrollTo(0, 0);
-
+    
       views.forEach(v => {
         const el = document.getElementById(v);
         if (!el) return;
+    
         el.classList.toggle('active', v === view);
-
+    
         if (v === view) {
-          el.classList.remove('animate');
-          void el.offsetWidth;
-          el.classList.add('animate');
+          // Only re-trigger animations when the main view changes
+          if (viewChanged) {
+            el.classList.remove('animate');
+            void el.offsetWidth; // forces reflow to restart CSS animations
+            el.classList.add('animate');
+          }
+          // If view did NOT change, do not touch .animate (prevents replay)
         } else {
+          // When leaving a view, clear its animate state
           el.classList.remove('animate');
         }
       });
-
+    
       setActiveLink(view);
-
-      if (view === 'work') setupWorkHint();
-      else teardownWorkHint();
+    
+      // Only show the Work hint when entering Work (not when closing detail)
+      if (viewChanged) {
+        if (view === 'work') setupWorkHint();
+        else teardownWorkHint();
+      }
     }
+
 
     // Hash formats:
     //   #work                (top of work)
