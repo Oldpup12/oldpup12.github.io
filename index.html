@@ -29,6 +29,12 @@
     }
     body:hover { background-position: 80% 80%; }
 
+    /* Prevent scroll when modal is open */
+    body.modal-open {
+      overflow: hidden;
+      position: relative;
+    }
+
     /* ---- Views (client-side "pages") ---- */
     .view { display: none; }
     .view.active { display: block; }
@@ -226,7 +232,7 @@
       grid-template-columns: 120px 1fr;
       gap: 3rem;
       align-items: start;
-      opacity: 1; /* always visible */
+      opacity: 1;
     }
 
     .work-timeline {
@@ -396,7 +402,6 @@
       margin-bottom: 2rem;
     }
 
-    /* Desktop: Force column breaks */
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
 
@@ -754,8 +759,7 @@
 
   <script>
   (function () {
-    // 1) DISABLE BROWSER AUTO-SCROLL RESTORATION IMMEDIATELY
-    // This is critical for preventing the "jump to top" on history back
+    // Disable browser's automatic scroll restoration
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     // ========== ROUTER ==========
@@ -853,7 +857,7 @@
       }, { signal: controller.signal });
     }
 
-    // ========== ARTWORK DETAIL OVERLAY ==========
+    // ========== ARTWORK DETAIL OVERLAY (NEW APPROACH) ==========
     const overlay = document.getElementById('workDetailOverlay');
     const closeBtn = document.getElementById('detailClose');
     const detailMeta = document.getElementById('detailMeta');
@@ -956,6 +960,7 @@
 
     let savedScrollY = 0;
     let detailHistoryPushed = false;
+    let restoreTimers = [];
 
     function renderDetailImages(artId, images) {
       if (!detailGrid) return;
@@ -971,27 +976,16 @@
       }).join('');
     }
 
-    function lockBodyScroll(y) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${y}px`;
-      document.body.style.width = '100%';
-    }
-
-    function unlockBodyScroll() {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.overflow = '';
-      document.body.style.width = '';
-    }
-
+    // New simpler approach: just use overflow hidden, no position tricks
     function openDetail(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
 
-      // 2) SAVE SCROLL POSITION BEFORE LOCKING
+      // Save current scroll position
       savedScrollY = window.pageYOffset || window.scrollY || 0;
-      lockBodyScroll(savedScrollY);
+
+      // Simple: just hide overflow
+      document.body.classList.add('modal-open');
 
       overlay.scrollTop = 0;
 
@@ -1008,7 +1002,7 @@
       overlay.setAttribute('aria-hidden', 'false');
 
       if (!detailHistoryPushed) {
-        history.pushState({ detailOpen: true, artId }, '', location.href);
+        history.pushState({ detailOpen: true, artId, scrollY: savedScrollY }, '', location.href);
         detailHistoryPushed = true;
       }
     }
@@ -1019,33 +1013,66 @@
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
 
-      unlockBodyScroll();
+      // Clear any pending restore attempts
+      restoreTimers.forEach(t => clearTimeout(t));
+      restoreTimers = [];
 
-      // 3) RESTORE SCROLL IMMEDIATELY (SYNCHRONOUSLY)
-      // This is crucial. If we wait for requestAnimationFrame, the browser
-      // might render a frame at scroll position 0, causing the "jump".
+      // Remove overflow hidden
+      document.body.classList.remove('modal-open');
+
+      // AGGRESSIVE MULTI-ATTEMPT RESTORE for mobile
+      // Attempt 1: Immediate
       window.scrollTo(0, savedScrollY);
 
-      // 4) BACKUP RESTORE (Double-check)
-      // Just in case the sync scroll didn't take for some reason.
-      requestAnimationFrame(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 5) {
+      // Attempt 2: Next frame
+      restoreTimers.push(setTimeout(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 10) {
           window.scrollTo(0, savedScrollY);
         }
-      });
+      }, 0));
+
+      // Attempt 3: After 16ms (1 frame)
+      restoreTimers.push(setTimeout(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 10) {
+          window.scrollTo(0, savedScrollY);
+        }
+      }, 16));
+
+      // Attempt 4: After 50ms
+      restoreTimers.push(setTimeout(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 10) {
+          window.scrollTo(0, savedScrollY);
+        }
+      }, 50));
+
+      // Attempt 5: After 100ms
+      restoreTimers.push(setTimeout(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 10) {
+          window.scrollTo(0, savedScrollY);
+        }
+      }, 100));
+
+      // Attempt 6: After 200ms (final)
+      restoreTimers.push(setTimeout(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 10) {
+          window.scrollTo(0, savedScrollY);
+        }
+      }, 200));
 
       detailHistoryPushed = false;
     }
 
     function requestCloseDetail() {
-      // If we pushed state, go back. popstate will handle closing.
       if (detailHistoryPushed) history.back();
       else closeDetail();
     }
 
     window.addEventListener('popstate', (e) => {
-      // If modal is open, we assume the user pressed Back to close it
       if (overlay && overlay.classList.contains('open')) {
+        // Try to get scroll from history state if available
+        if (e.state && typeof e.state.scrollY === 'number') {
+          savedScrollY = e.state.scrollY;
+        }
         closeDetail();
       }
     });
