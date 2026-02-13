@@ -29,12 +29,6 @@
     }
     body:hover { background-position: 80% 80%; }
 
-    /* Prevent scroll when modal is open */
-    body.modal-open {
-      overflow: hidden;
-      position: relative;
-    }
-
     /* ---- Views (client-side "pages") ---- */
     .view { display: none; }
     .view.active { display: block; }
@@ -190,7 +184,7 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
-    /* Hint under Work heading */
+    /* Hint under Work heading (transition-based, reliable) */
     .work-hint {
       font-size: 1.05rem;
       letter-spacing: 0.3px;
@@ -212,12 +206,8 @@
       opacity: 0;
       transform: translateY(-6px);
     }
-    @media (max-width: 850px) {
-      .work-hint { font-size: 1.1rem; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .work-hint { transition: none; }
-    }
+    @media (max-width: 850px) { .work-hint { font-size: 1.1rem; } }
+    @media (prefers-reduced-motion: reduce) { .work-hint { transition: none; } }
 
     .work-wrapper {
       width: min(1100px, 92vw);
@@ -232,9 +222,10 @@
       grid-template-columns: 120px 1fr;
       gap: 3rem;
       align-items: start;
-      opacity: 1;
+      opacity: 1; /* visible immediately (avoids mobile IO “only appears after scroll”) */
     }
 
+    /* Timeline column: MUST stretch full height for sticky + line to work */
     .work-timeline {
       position: relative;
       align-self: stretch;
@@ -243,6 +234,7 @@
       align-items: center;
     }
 
+    /* Sticky year label */
     .work-year-label {
       position: -webkit-sticky;
       position: sticky;
@@ -256,6 +248,7 @@
       padding-bottom: 1rem;
     }
 
+    /* Vertical line below year */
     .work-timeline-line {
       position: absolute;
       top: 3.5rem;
@@ -267,6 +260,7 @@
       border-radius: 2px;
     }
 
+    /* PURE CSS COLUMN STACKING using CSS columns property */
     .work-grid {
       column-count: 2;
       column-gap: 2rem;
@@ -402,6 +396,7 @@
       margin-bottom: 2rem;
     }
 
+    /* Desktop: Force column breaks for specific artworks */
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
 
@@ -411,6 +406,14 @@
       display: block;
     }
 
+    /* ---- Scroll lock (NEW) ----
+       Don’t use position:fixed on body; that’s the thing that tends to “lose” scroll on iOS/Chrome. */
+    html.modal-open,
+    body.modal-open {
+      overflow: hidden;
+      height: 100%;
+    }
+
     /* ---- Desktop footer ---- */
     @media (min-width: 851px) {
       .contact a { font-size: 1.25rem; }
@@ -418,7 +421,7 @@
       .contact a img.email-icon { width: 21px; height: 21px; }
     }
 
-    /* ---- Mobile ---- */
+    /* ---- Mobile (triggers earlier at 850px instead of 768px) ---- */
     @media (max-width: 850px) {
       .main { flex-direction: column; text-align: center; padding: 2rem; }
       .footer { flex-direction: column; gap: 1rem; align-items: flex-end; }
@@ -437,7 +440,6 @@
       .top-nav a { font-size: 1rem; }
 
       .main.work { padding-top: 6.25rem; }
-
       .work-year { grid-template-columns: 80px 1fr; gap: 1.5rem; }
       .work-year-label { top: 6.25rem; font-size: 1.35rem; }
       .work-timeline-line { top: 2.8rem; }
@@ -451,7 +453,7 @@
       }
       .work-card { margin-bottom: 1.25rem; }
 
-      /* Mobile: artwork order for 2025 */
+      /* Mobile: artwork order for 2025 - PinkLines, PlasterChunk, RockLines, WhiteLineWalls */
       .work-card[data-artwork="2025-1"] { order: 1; }
       .work-card[data-artwork="2025-3"] { order: 2; }
       .work-card[data-artwork="2025-2"] { order: 3; }
@@ -468,13 +470,14 @@
       .work-detail-panel { padding-top: 6.75rem; }
       .detail-meta { font-size: 1.35rem; }
 
+      /* Mobile: Left-align detail text */
       .detail-text { text-align: left; }
 
       /* Mobile: Remove desktop column breaks */
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: auto; }
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: auto; }
 
-      /* Mobile: Custom image orders */
+      /* Mobile: Custom image orders using flexbox order property */
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(2) { order: 3; }
@@ -759,7 +762,7 @@
 
   <script>
   (function () {
-    // Disable browser's automatic scroll restoration
+    // Helps reduce browser interference with scroll position during history navigation.
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     // ========== ROUTER ==========
@@ -780,11 +783,14 @@
       });
     }
 
+    // Only scroll-to-top when the VIEW changes (home -> work, work -> about, etc.)
     let currentView = null;
 
     function showView(view) {
-      if (view !== currentView) window.scrollTo(0, 0);
+      const viewChanged = (view !== currentView);
       currentView = view;
+
+      if (viewChanged) window.scrollTo(0, 0);
 
       views.forEach(v => {
         const el = document.getElementById(v);
@@ -806,15 +812,25 @@
       else teardownWorkHint();
     }
 
-    function route() {
-      const hash = (location.hash || '').replace('#', '').toLowerCase();
-      showView(views.includes(hash) ? hash : 'home');
+    function parseHash() {
+      const raw = (location.hash || '#home').slice(1); // remove "#"
+      const cleaned = raw.trim();
+
+      // Detail route: "#work/2025-1"
+      if (cleaned.toLowerCase().startsWith('work/')) {
+        return { view: 'work', artId: cleaned.split('/').slice(1).join('/') || null };
+      }
+
+      // Work base route: "#work"
+      if (cleaned.toLowerCase() === 'work') {
+        return { view: 'work', artId: null };
+      }
+
+      const lower = cleaned.toLowerCase();
+      return { view: views.includes(lower) ? lower : 'home', artId: null };
     }
 
-    window.addEventListener('hashchange', route);
-    window.addEventListener('DOMContentLoaded', route);
-
-    // ========== WORK HINT ==========
+    // ========== WORK HINT (unchanged) ==========
     let workHintTimer = null;
     let workHintController = null;
 
@@ -848,16 +864,18 @@
 
       window.addEventListener('wheel', hide, { passive: true, signal: controller.signal });
       window.addEventListener('touchmove', hide, { passive: true, signal: controller.signal });
-      window.addEventListener('scroll', () => { if ((window.scrollY || 0) > 4) hide(); },
-        { passive: true, signal: controller.signal }
-      );
+
+      window.addEventListener('scroll', () => {
+        if ((window.scrollY || 0) > 4) hide();
+      }, { passive: true, signal: controller.signal });
+
       window.addEventListener('keydown', (e) => {
         const keys = ['ArrowDown', 'PageDown', ' ', 'Spacebar', 'Home', 'End'];
         if (keys.includes(e.key)) hide();
       }, { signal: controller.signal });
     }
 
-    // ========== ARTWORK DETAIL OVERLAY (NEW APPROACH) ==========
+    // ========== ARTWORK DETAIL OVERLAY (NEW: hash-based modal routing) ==========
     const overlay = document.getElementById('workDetailOverlay');
     const closeBtn = document.getElementById('detailClose');
     const detailMeta = document.getElementById('detailMeta');
@@ -958,14 +976,13 @@
       }
     };
 
-    let savedScrollY = 0;
-    let detailHistoryPushed = false;
-    let restoreTimers = [];
+    const WORK_SCROLL_KEY = 'workScrollBeforeDetail';
+    let currentArtId = null;
 
     function renderDetailImages(artId, images) {
       if (!detailGrid) return;
-      detailGrid.setAttribute('data-artwork', artId);
 
+      detailGrid.setAttribute('data-artwork', artId);
       detailGrid.innerHTML = images.map((img) => {
         if (!img.src) return '';
         return `
@@ -976,16 +993,35 @@
       }).join('');
     }
 
-    // New simpler approach: just use overflow hidden, no position tricks
-    function openDetail(artId) {
+    function lockScroll() {
+      document.documentElement.classList.add('modal-open');
+      document.body.classList.add('modal-open');
+    }
+
+    function unlockScroll() {
+      document.documentElement.classList.remove('modal-open');
+      document.body.classList.remove('modal-open');
+    }
+
+    function restoreWorkScroll() {
+      const y = parseInt(sessionStorage.getItem(WORK_SCROLL_KEY) || '0', 10) || 0;
+
+      // Multiple attempts beats iOS/Safari “helpful” anchor scrolling back to #work.
+      const tries = [0, 16, 64, 160, 320];
+      tries.forEach(ms => {
+        setTimeout(() => window.scrollTo(0, y), ms);
+      });
+    }
+
+    function openDetailModal(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
 
-      // Save current scroll position
-      savedScrollY = window.pageYOffset || window.scrollY || 0;
+      // Snapshot the current Work scroll position BEFORE we open the modal.
+      const y = window.pageYOffset || window.scrollY || 0;
+      sessionStorage.setItem(WORK_SCROLL_KEY, String(y));
 
-      // Simple: just hide overflow
-      document.body.classList.add('modal-open');
+      currentArtId = artId;
 
       overlay.scrollTop = 0;
 
@@ -996,100 +1032,96 @@
 
       if (detailMeta) detailMeta.innerHTML = `${data.title} • ${materialText} • ${data.size}`;
       if (detailDesc) detailDesc.textContent = data.description;
+
       renderDetailImages(artId, data.images);
+
+      lockScroll();
 
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
-
-      if (!detailHistoryPushed) {
-        history.pushState({ detailOpen: true, artId, scrollY: savedScrollY }, '', location.href);
-        detailHistoryPushed = true;
-      }
     }
 
-    function closeDetail() {
+    function closeDetailModalAndRestore() {
       if (!overlay) return;
 
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
 
-      // Clear any pending restore attempts
-      restoreTimers.forEach(t => clearTimeout(t));
-      restoreTimers = [];
+      currentArtId = null;
 
-      // Remove overflow hidden
-      document.body.classList.remove('modal-open');
-
-      // AGGRESSIVE MULTI-ATTEMPT RESTORE for mobile
-      // Attempt 1: Immediate
-      window.scrollTo(0, savedScrollY);
-
-      // Attempt 2: Next frame
-      restoreTimers.push(setTimeout(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 10) {
-          window.scrollTo(0, savedScrollY);
-        }
-      }, 0));
-
-      // Attempt 3: After 16ms (1 frame)
-      restoreTimers.push(setTimeout(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 10) {
-          window.scrollTo(0, savedScrollY);
-        }
-      }, 16));
-
-      // Attempt 4: After 50ms
-      restoreTimers.push(setTimeout(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 10) {
-          window.scrollTo(0, savedScrollY);
-        }
-      }, 50));
-
-      // Attempt 5: After 100ms
-      restoreTimers.push(setTimeout(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 10) {
-          window.scrollTo(0, savedScrollY);
-        }
-      }, 100));
-
-      // Attempt 6: After 200ms (final)
-      restoreTimers.push(setTimeout(() => {
-        if (Math.abs(window.scrollY - savedScrollY) > 10) {
-          window.scrollTo(0, savedScrollY);
-        }
-      }, 200));
-
-      detailHistoryPushed = false;
+      // Wait for your 0.35s fade transition, then unlock + restore scroll.
+      setTimeout(() => {
+        unlockScroll();
+        restoreWorkScroll();
+      }, 350);
     }
 
-    function requestCloseDetail() {
-      if (detailHistoryPushed) history.back();
-      else closeDetail();
-    }
-
-    window.addEventListener('popstate', (e) => {
-      if (overlay && overlay.classList.contains('open')) {
-        // Try to get scroll from history state if available
-        if (e.state && typeof e.state.scrollY === 'number') {
-          savedScrollY = e.state.scrollY;
+    function ensureDetailStateForRoute(artId) {
+      // If route is "#work/<id>", modal must be open.
+      if (artId) {
+        if (!overlay.classList.contains('open') || currentArtId !== artId) {
+          openDetailModal(artId);
         }
-        closeDetail();
+        return;
       }
-    });
 
+      // If route is "#work" (no artId), modal must be closed and scroll restored.
+      if (overlay.classList.contains('open')) {
+        closeDetailModalAndRestore();
+      }
+    }
+
+    // Route handler (single source of truth)
+    function route() {
+      const { view, artId } = parseHash();
+
+      // If leaving work, close modal immediately (no restore needed)
+      if (view !== 'work' && overlay && overlay.classList.contains('open')) {
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        unlockScroll();
+        currentArtId = null;
+      }
+
+      showView(view);
+
+      if (view === 'work') {
+        ensureDetailStateForRoute(artId);
+      }
+    }
+
+    window.addEventListener('hashchange', route);
+    window.addEventListener('DOMContentLoaded', route);
+
+    // Clicking a work card navigates to "#work/<artId>" (adds history entry).
     document.addEventListener('click', (e) => {
       const card = e.target.closest('.work-card[data-artwork]');
-      if (card) {
-        e.preventDefault();
-        openDetail(card.getAttribute('data-artwork'));
-      }
+      if (!card) return;
+
+      e.preventDefault();
+      const artId = card.getAttribute('data-artwork');
+      if (!artId) return;
+
+      location.hash = `work/${artId}`;
     });
 
-    if (closeBtn) closeBtn.addEventListener('click', requestCloseDetail);
+    // X button behaves like the browser Back button (so you don’t create a new extra history entry).
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        if ((location.hash || '').toLowerCase().startsWith('#work/')) {
+          history.back();
+        } else {
+          // fallback
+          location.hash = 'work';
+        }
+      });
+    }
 
+    // Escape closes modal via history (desktop nice-to-have)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
-        requestCloseDetail();
+        if ((location.hash || '').toLowerCase().startsWith('#work/')) history.back();
+        else location.hash = 'work';
       }
     });
   })();
