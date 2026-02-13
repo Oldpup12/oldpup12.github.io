@@ -220,13 +220,13 @@
       gap: 4rem;
     }
 
-    /* Year block: left timeline, right artworks (always visible) */
+    /* Year block: left timeline, right artworks */
     .work-year {
       display: grid;
       grid-template-columns: 120px 1fr;
       gap: 3rem;
       align-items: start;
-      opacity: 1;
+      opacity: 1; /* always visible */
     }
 
     .work-timeline {
@@ -396,6 +396,7 @@
       margin-bottom: 2rem;
     }
 
+    /* Desktop: Force column breaks */
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
 
@@ -753,7 +754,8 @@
 
   <script>
   (function () {
-    // Manual scroll restoration helps, but some mobile browsers ignore it; we also store scroll in history state.
+    // 1) DISABLE BROWSER AUTO-SCROLL RESTORATION IMMEDIATELY
+    // This is critical for preventing the "jump to top" on history back
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
     // ========== ROUTER ==========
@@ -774,16 +776,7 @@
       });
     }
 
-    // Keep the current view so we don't accidentally scroll-to-top unless view actually changed.
     let currentView = null;
-
-    // Ensure the current history entry has a state object (so back/forward has somewhere to store workScrollY).
-    function stampViewState(view) {
-      const prev = history.state || {};
-      const next = { ...prev, view };
-      if (view === 'work') next.workScrollY = (window.pageYOffset || window.scrollY || 0);
-      history.replaceState(next, '', location.href);
-    }
 
     function showView(view) {
       if (view !== currentView) window.scrollTo(0, 0);
@@ -804,7 +797,6 @@
       });
 
       setActiveLink(view);
-      stampViewState(view);
 
       if (view === 'work') setupWorkHint();
       else teardownWorkHint();
@@ -818,7 +810,7 @@
     window.addEventListener('hashchange', route);
     window.addEventListener('DOMContentLoaded', route);
 
-    // ========== WORK HINT (robust) ==========
+    // ========== WORK HINT ==========
     let workHintTimer = null;
     let workHintController = null;
 
@@ -979,15 +971,6 @@
       }).join('');
     }
 
-    function restoreScroll(y) {
-      requestAnimationFrame(() => {
-        window.scrollTo(0, y);
-        requestAnimationFrame(() => window.scrollTo(0, y));
-        setTimeout(() => window.scrollTo(0, y), 60);
-        setTimeout(() => window.scrollTo(0, y), 220);
-      });
-    }
-
     function lockBodyScroll(y) {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
@@ -1002,39 +985,12 @@
       document.body.style.width = '';
     }
 
-    // --- Key fix: write current Work scroll into the Work history entry ---
-    let scrollSaveRAF = null;
-    function saveWorkScrollToHistory() {
-      if (currentView !== 'work') return;
-      if (overlay && overlay.classList.contains('open')) return;
-
-      const y = window.pageYOffset || window.scrollY || 0;
-      const prev = history.state || {};
-      const next = { ...prev, view: 'work', workScrollY: y };
-
-      // Avoid needless replaceState churn
-      if (prev.view === 'work' && prev.workScrollY === y) return;
-
-      history.replaceState(next, '', location.href);
-    }
-
-    function onScroll() {
-      if (scrollSaveRAF) return;
-      scrollSaveRAF = requestAnimationFrame(() => {
-        scrollSaveRAF = null;
-        saveWorkScrollToHistory();
-      });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
-
     function openDetail(artId) {
       const data = ARTWORKS[artId];
       if (!data || !overlay) return;
 
-      // Save + stamp Work scroll into THIS history entry before pushing the modal entry
+      // 2) SAVE SCROLL POSITION BEFORE LOCKING
       savedScrollY = window.pageYOffset || window.scrollY || 0;
-      saveWorkScrollToHistory();
-
       lockBodyScroll(savedScrollY);
 
       overlay.scrollTop = 0;
@@ -1051,14 +1007,13 @@
       overlay.classList.add('open');
       overlay.setAttribute('aria-hidden', 'false');
 
-      // Push 1 entry so Back closes the modal
       if (!detailHistoryPushed) {
         history.pushState({ detailOpen: true, artId }, '', location.href);
         detailHistoryPushed = true;
       }
     }
 
-    function closeDetail(restoreY) {
+    function closeDetail() {
       if (!overlay) return;
 
       overlay.classList.remove('open');
@@ -1066,29 +1021,32 @@
 
       unlockBodyScroll();
 
-      const y = (typeof restoreY === 'number') ? restoreY : savedScrollY;
-      restoreScroll(y);
+      // 3) RESTORE SCROLL IMMEDIATELY (SYNCHRONOUSLY)
+      // This is crucial. If we wait for requestAnimationFrame, the browser
+      // might render a frame at scroll position 0, causing the "jump".
+      window.scrollTo(0, savedScrollY);
+
+      // 4) BACKUP RESTORE (Double-check)
+      // Just in case the sync scroll didn't take for some reason.
+      requestAnimationFrame(() => {
+        if (Math.abs(window.scrollY - savedScrollY) > 5) {
+          window.scrollTo(0, savedScrollY);
+        }
+      });
 
       detailHistoryPushed = false;
-
-      // After closing, re-stamp the history scroll state (so subsequent backs/forwards are consistent)
-      requestAnimationFrame(() => saveWorkScrollToHistory());
     }
 
     function requestCloseDetail() {
-      if (detailHistoryPushed) history.back();  // popstate will close
-      else closeDetail(savedScrollY);
+      // If we pushed state, go back. popstate will handle closing.
+      if (detailHistoryPushed) history.back();
+      else closeDetail();
     }
 
-    // IMPORTANT: use destination history state's stored scrollY when closing via back
     window.addEventListener('popstate', (e) => {
+      // If modal is open, we assume the user pressed Back to close it
       if (overlay && overlay.classList.contains('open')) {
-        const restoreY = (e && e.state && typeof e.state.workScrollY === 'number')
-          ? e.state.workScrollY
-          : savedScrollY;
-        closeDetail(restoreY);
-      } else {
-        // If user navigates with back/forward between hashes, router will handle via hashchange.
+        closeDetail();
       }
     });
 
