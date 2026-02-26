@@ -198,14 +198,8 @@
       text-align: center;
       width: min(1100px, 92vw);
     }
-    #work.animate .work-hint {
-      opacity: 0.62;
-      transform: translateY(0);
-    }
-    #work .work-hint.is-hidden {
-      opacity: 0;
-      transform: translateY(-6px);
-    }
+    #work.animate .work-hint { opacity: 0.62; transform: translateY(0); }
+    #work .work-hint.is-hidden { opacity: 0; transform: translateY(-6px); }
     @media (max-width: 850px) { .work-hint { font-size: 1.1rem; } }
     @media (prefers-reduced-motion: reduce) { .work-hint { transition: none; } }
 
@@ -257,10 +251,7 @@
       border-radius: 2px;
     }
 
-    .work-grid {
-      column-count: 2;
-      column-gap: 2rem;
-    }
+    .work-grid { column-count: 2; column-gap: 2rem; }
 
     .work-card {
       display: block;
@@ -280,11 +271,7 @@
     }
     .work-card:hover .work-media { transform: scale(1.05); }
 
-    .work-media img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
+    .work-media img { width: 100%; height: auto; display: block; }
 
     .work-size {
       position: absolute;
@@ -313,10 +300,7 @@
       transition: opacity 0.35s ease;
       overscroll-behavior: contain;
     }
-    .work-detail-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .work-detail-overlay.open { opacity: 1; pointer-events: auto; }
 
     .work-detail-panel {
       width: min(1100px, 92vw);
@@ -326,10 +310,7 @@
       opacity: 0;
       transition: transform 0.35s ease, opacity 0.35s ease;
     }
-    .work-detail-overlay.open .work-detail-panel {
-      transform: translateY(0);
-      opacity: 1;
-    }
+    .work-detail-overlay.open .work-detail-panel { transform: translateY(0); opacity: 1; }
 
     .detail-header {
       width: 100%;
@@ -387,17 +368,12 @@
       break-inside: avoid;
       margin-bottom: 2rem;
     }
-
     #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: column; }
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
-
     .detail-media img { width: 100%; height: auto; display: block; }
 
     /* Scroll lock (NO body position:fixed) */
-    html.modal-open, body.modal-open {
-      overflow: hidden;
-      height: 100%;
-    }
+    html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 
     /* ---- Desktop footer ---- */
     @media (min-width: 851px) {
@@ -534,7 +510,7 @@
       align-items: flex-start;
     }
 
-    /* Current Show button (NO border ring now; just gradient background + glow) */
+    /* Current Show button (NO border ring; gradient background + glow) */
     .current-show-btn{
       position: relative;
 
@@ -560,23 +536,24 @@
       margin-top: 0;
       padding: 1.25rem 1.3rem;
 
-      border: none;              /* removed */
+      border: none;
       outline: none;
       border-radius: 2.6rem;
 
-      background: transparent;   /* background handled by ::after */
+      background: transparent; /* background handled by ::after */
       cursor: pointer;
       text-align: left;
+
+      /* default: no glow here; desktop gets it via media query below */
+      box-shadow: none;
 
       transition: transform 200ms ease, box-shadow 220ms ease;
     }
 
-    /* Removed the border pseudo-element entirely */
-    .current-show-btn::before{
-      content: none;
-    }
+    /* No border pseudo-element */
+    .current-show-btn::before{ content: none; }
 
-    /* Gradient background ALWAYS on */
+    /* Gradient background ALWAYS on (slightly darker: lower opacity) */
     .current-show-btn::after{
       content: "";
       position: absolute;
@@ -587,19 +564,22 @@
       background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
 
-      opacity: 0.22;
+      opacity: 0.16; /* was ~0.22; lower = darker against the dark page */
       transition: opacity 220ms ease;
       pointer-events: none;
     }
 
-    /* Always-on soft glow (and stronger on hover) */
-    .current-show-btn{
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04) inset,
-        0 0 22px rgba(232, 203, 176, 0.12),
-        0 0 38px rgba(214, 170, 146, 0.10);
+    /* Desktop: keep the always-on soft glow (mobile won't inherit this) */
+    @media (min-width: 851px){
+      .current-show-btn{
+        box-shadow:
+          0 0 0 1px rgba(255,255,255,0.04) inset,
+          0 0 22px rgba(232, 203, 176, 0.12),
+          0 0 38px rgba(214, 170, 146, 0.10);
+      }
     }
 
+    /* Hover: grow + stronger glow */
     .current-show-btn:hover{
       transform: translateY(-1px) scale(1.03);
       box-shadow:
@@ -608,16 +588,16 @@
         0 0 56px rgba(214, 170, 146, 0.16),
         0 0 78px rgba(193, 150, 127, 0.12);
     }
-
     .current-show-btn:hover::after{
-      opacity: 0.36;
+      opacity: 0.28; /* was ~0.36; keep hover darker too */
     }
 
+    /* Top kicker: centered across entire box */
     .cs-kicker{
       grid-area: kicker;
       text-align: center;
       font-style: italic;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
       opacity: 0.92;
       justify-self: center;
       width: 100%;
@@ -634,17 +614,18 @@
       text-shadow: 0 1px 16px rgba(0,0,0,0.55);
     }
 
+    /* Smaller typography inside box (your request) */
     .cs-title{
       font-weight: 700;
-      font-size: 1.6rem;
+      font-size: 1.40rem; /* was 1.6rem */
       margin-left: 0.25rem;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.35rem;
     }
 
     .cs-lines{
       margin-left: 0.25rem;
-      font-size: 1.06rem;
-      line-height: 1.45;
+      font-size: 0.98rem; /* was ~1.06rem */
+      line-height: 1.42;
       opacity: 0.92;
     }
 
@@ -740,25 +721,22 @@
         text-align: left;
         max-width: min(520px, 100%);
         margin: 0.25rem 0 1.65rem;
+
+        /* IMPORTANT: no glow on mobile unless hover */
+        box-shadow: none;
       }
 
       .show-detail-panel{ padding-top: 6.75rem; }
 
-      /* Mobile detailed view text larger (your request) */
+      /* Mobile detailed view text larger */
       .show-detail-copy{ font-size: 1.25rem; line-height: 1.75; }
     }
 
     /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
-      .current-show-btn::after{
-        animation: none;
-      }
-      .current-show-btn{
-        transition: none;
-      }
-      .cs-arrow{
-        transition: none;
-      }
+      .current-show-btn::after{ animation: none; }
+      .current-show-btn{ transition: none; }
+      .cs-arrow{ transition: none; }
     }
 
     /* ---- Page text animations ---- */
@@ -1087,7 +1065,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       const viewChanged = (view !== currentView);
       currentView = view;
 
-      // Only scroll to top when switching main views
       if (viewChanged) window.scrollTo(0, 0);
 
       views.forEach(v => {
@@ -1097,10 +1074,9 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
         el.classList.toggle('active', v === view);
 
         if (v === view) {
-          // Only re-trigger animations when the main view changes
           if (viewChanged) {
             el.classList.remove('animate');
-            void el.offsetWidth; // forces reflow to restart CSS animations
+            void el.offsetWidth;
             el.classList.add('animate');
           }
         } else {
@@ -1116,27 +1092,20 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       }
     }
 
-    // Hash formats:
-    //   #work                (top of work)
-    //   #work~1234           (work at scrollY=1234)
-    //   #work/2025-1         (detail open)
     function parseHash() {
       const raw = (location.hash || '#home').slice(1).trim();
 
-      // Detail
       if (raw.toLowerCase().startsWith('work/')) {
         const artId = raw.split('/').slice(1).join('/') || null;
         return { view: 'work', artId, workY: null };
       }
 
-      // Work with scroll stamp
       if (raw.toLowerCase().startsWith('work~')) {
         const num = raw.split('~')[1] || '';
         const y = parseInt(num, 10);
         return { view: 'work', artId: null, workY: Number.isFinite(y) ? y : 0 };
       }
 
-      // Normal views
       const lower = raw.toLowerCase();
       return { view: views.includes(lower) ? lower : 'home', artId: null, workY: null };
     }
@@ -1325,7 +1294,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       if (!data || !overlay) return;
 
       currentArtId = artId;
-
       overlay.scrollTop = 0;
 
       let materialText = data.material;
@@ -1349,14 +1317,11 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       overlay.setAttribute('aria-hidden', 'true');
       currentArtId = null;
 
-      setTimeout(() => {
-        unlockScroll();
-      }, 350);
+      setTimeout(() => unlockScroll(), 350);
     }
 
     function restoreWorkScroll(y) {
       const target = Math.max(0, parseInt(String(y || 0), 10) || 0);
-
       const tries = [0, 16, 64, 160, 320];
       tries.forEach(ms => setTimeout(() => window.scrollTo(0, target), ms));
     }
@@ -1369,7 +1334,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     function stampWorkScrollY(y) {
       const rounded = Math.max(0, Math.round(y || 0));
-
       if (Math.abs(rounded - lastStampedY) < 8) return;
       lastStampedY = rounded;
 
@@ -1405,11 +1369,8 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {
-        if ((location.hash || '').toLowerCase().startsWith('#work/')) {
-          history.back();
-        } else {
-          location.hash = 'work';
-        }
+        if ((location.hash || '').toLowerCase().startsWith('#work/')) history.back();
+        else location.hash = 'work';
       });
     }
 
@@ -1438,9 +1399,7 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       if (view !== 'work') return;
 
       if (artId) {
-        if (!overlay.classList.contains('open') || currentArtId !== artId) {
-          openDetailModal(artId);
-        }
+        if (!overlay.classList.contains('open') || currentArtId !== artId) openDetailModal(artId);
         return;
       }
 
@@ -1488,7 +1447,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
         closeShowModal();
       }
     });
-
   })();
   </script>
 </body>
