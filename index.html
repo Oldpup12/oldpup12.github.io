@@ -495,6 +495,229 @@
     .with-nav { padding-top: 5rem; }
     @media (max-width: 850px) { .with-nav { padding-top: 5.75rem; } }
 
+    /* ---- Current Show ---- */
+    :root{
+      --show-grad: linear-gradient(
+        90deg,
+        rgba(241,194,125,0.95),
+        rgba(40,140,90,0.95),
+        rgba(140,95,190,0.95),
+        rgba(241,194,125,0.95)
+      );
+    }
+    
+    @keyframes showGradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    /* Home: move content up a bit on desktop so the new box sits comfortably under the bio */
+    #home .main { align-items: flex-start; }
+    
+    /* Stack wrapper so we can reorder on mobile */
+    .home-left-stack{
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    /* Current Show button */
+    .current-show-btn{
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 1.15rem;
+    
+      width: fit-content;
+      max-width: min(620px, 100%);
+      margin-top: 1.35rem; /* space from bio on desktop */
+      padding: 1.05rem 1.05rem;
+    
+      border: 2px solid transparent;
+      border-radius: 1.05rem;
+    
+      background: rgba(0,0,0,0.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    
+      color: #f0f0f0;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: left;
+    
+      transition: transform 160ms ease, background 220ms ease;
+    }
+    
+    /* Animated gradient border */
+    .current-show-btn::before{
+      content: "";
+      position: absolute;
+      inset: 0;
+      padding: 2px;
+      border-radius: inherit;
+    
+      background: var(--show-grad);
+      background-size: 300% 300%;
+      animation: showGradientShift 6.5s linear infinite;
+    
+      /* show only border */
+      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    
+      pointer-events: none;
+    }
+    
+    /* Hover: fill with the same moving gradient (kept translucent for readability) */
+    .current-show-btn::after{
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+    
+      background: var(--show-grad);
+      background-size: 300% 300%;
+      animation: showGradientShift 6.5s linear infinite;
+    
+      opacity: 0;
+      transition: opacity 220ms ease;
+      pointer-events: none;
+    }
+    
+    .current-show-btn:hover{
+      transform: translateY(-1px);
+    }
+    
+    .current-show-btn:hover::after{
+      opacity: 0.34;
+    }
+    
+    .current-show-btn:hover .cs-left{
+      text-shadow: 0 1px 14px rgba(0,0,0,0.55);
+    }
+    
+    .cs-left{ position: relative; z-index: 1; }
+    .cs-kicker{
+      text-align: center;
+      font-style: italic; /* only italic text requested */
+      font-size: 0.95rem;
+      opacity: 0.92;
+      margin-bottom: 0.45rem;
+    }
+    .cs-title{
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin-left: 0.25rem; /* slight left indent */
+      margin-bottom: 0.35rem;
+    }
+    .cs-lines{
+      margin-left: 0.25rem; /* match indent */
+      font-size: 1.02rem;
+      line-height: 1.45;
+      opacity: 0.92;
+    }
+    
+    .cs-arrow{
+      position: relative;
+      z-index: 1;
+      font-size: 1.05rem;
+      opacity: 0.92;
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+    
+    .current-show-btn:hover .cs-arrow{
+      transform: translateX(14px);
+      opacity: 0;
+    }
+    
+    /* Modal overlay for Current Show */
+    .show-detail-overlay{
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+    
+      background: rgba(0,0,0,0.42);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      overscroll-behavior: contain;
+    }
+    
+    .show-detail-overlay.open{
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    .show-detail-panel{
+      width: min(980px, 92vw);
+      margin: 0 auto;
+      padding: 6.25rem 0 3rem;
+    
+      transform: translateY(14px);
+      opacity: 0;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    
+    .show-detail-overlay.open .show-detail-panel{
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .show-detail-header{
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: start;
+      gap: 1rem;
+      margin-bottom: 1.35rem;
+    }
+    
+    .show-detail-title{
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 0.4px;
+      font-weight: 700;
+    }
+    
+    .show-detail-copy{
+      text-align: center;
+      white-space: pre-line;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      opacity: 0.92;
+    }
+    
+    /* Mobile placement: box between name and bio, centered */
+    @media (max-width: 850px){
+      .home-left-stack{ align-items: center; }
+      .home-name{ order: 1; margin-bottom: 1.2rem; }
+      #currentShowBtn{ order: 2; margin-top: 0; }
+      .home-bio{ order: 3; margin-top: 1.2rem; }
+    
+      .current-show-btn{
+        text-align: left;          /* keep inner left-indents */
+        max-width: min(520px, 100%);
+      }
+    }
+    
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      .current-show-btn::before,
+      .current-show-btn::after{
+        animation: none;
+      }
+      .cs-arrow{
+        transition: none;
+      }
+    }
+
     /* ---- Page text animations ---- */
     #about .section-title,
     #about .about-text,
@@ -535,10 +758,35 @@
     <div class="container with-nav">
       <div class="main">
         <div class="left">
-          <h1 class="name" id="home-title">Marcy Davis</h1>
-          <p class="bio">
-            Marcy is a third-year MFA candidate in Sculpture at Texas Christian University. She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
-          </p>
+          <div class="home-left-stack">
+            <h1 class="name home-name" id="home-title">Marcy Davis</h1>
+        
+            <!-- Current Show (button) -->
+            <button
+              class="current-show-btn"
+              id="currentShowBtn"
+              type="button"
+              aria-haspopup="dialog"
+              aria-controls="showDetailOverlay"
+              aria-label="Open current show details: Understory"
+            >
+              <div class="cs-left">
+                <div class="cs-kicker">Current Show</div>
+                <div class="cs-title">Understory</div>
+                <div class="cs-lines">
+                  <div>Moudy Gallery</div>
+                  <div>Feb 25th - Mar 3rd</div>
+                  <div>Opening Reception: Feb 27th, 6 - 8 PM</div>
+                </div>
+              </div>
+        
+              <div class="cs-arrow" aria-hidden="true">→</div>
+            </button>
+        
+            <p class="bio home-bio">
+              Marcy is a third-year MFA candidate in Sculpture at Texas Christian University. She earned her BFA with honors in Sculpture from the University of Texas at Arlington, with a minor in Glass.
+            </p>
+          </div>
         </div>
         <div class="right">
           <div class="image-placeholder">
@@ -740,6 +988,32 @@
     </div>
   </section>
 
+  <!-- Current Show Detail Overlay -->
+  <div
+    class="show-detail-overlay"
+    id="showDetailOverlay"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="showDetailTitle"
+  >
+    <div class="show-detail-panel" role="document">
+      <div class="show-detail-header">
+        <div class="show-detail-spacer" aria-hidden="true"></div>
+        <h2 class="show-detail-title" id="showDetailTitle">Understory</h2>
+        <button class="detail-close" id="showDetailClose" aria-label="Close">×</button>
+      </div>
+  
+      <div class="show-detail-copy">
+  Understory, featuring the thesis work of MFA Candidate Marcy Davis. Understory will be on view at Moudy Gallery February 25 - March 3 with an opening reception on Friday, February 27, 6-8 pm.
+  
+  Understory examines how a body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land-a terrain, restless and alive with invisible life. At these intersections, edges collapse: flesh becomes landscape and architecture breathes like a body. This unfolds into an unsettled in-between where body and structure, inside and outside, intertwine.
+  
+  The works in Understory disguise their origins. Materials such as asphalt, felt, wax, and clay slip become organic matter appearing as external or internal growth overtaking what was there before, or becoming from what once was. These materials perform a double deception. They suggest the interior scaffolding of a body or the underground architecture of plant growth, ultimately refusing to settle into either. Understory is a gap where things slip between states: structure loosening, edges giving way, one form thriving as another degrades. What builds might also seep. What contains might also rupture. In the slippage, something unnamed persists.
+      </div>
+    </div>
+  </div>
+  
   <script>
   (function () {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -1152,6 +1426,47 @@
 
     window.addEventListener('hashchange', route);
     window.addEventListener('DOMContentLoaded', route);
+
+    // ---------------------------
+    // CURRENT SHOW OVERLAY
+    // ---------------------------
+    const showBtn = document.getElementById('currentShowBtn');
+    const showOverlay = document.getElementById('showDetailOverlay');
+    const showCloseBtn = document.getElementById('showDetailClose');
+    
+    function openShowModal() {
+      if (!showOverlay) return;
+      showOverlay.scrollTop = 0;
+      lockScroll();
+      showOverlay.classList.add('open');
+      showOverlay.setAttribute('aria-hidden', 'false');
+      if (showCloseBtn) showCloseBtn.focus({ preventScroll: true });
+    }
+    
+    function closeShowModal() {
+      if (!showOverlay) return;
+      showOverlay.classList.remove('open');
+      showOverlay.setAttribute('aria-hidden', 'true');
+      setTimeout(() => unlockScroll(), 350);
+    }
+    
+    if (showBtn) showBtn.addEventListener('click', openShowModal);
+    if (showCloseBtn) showCloseBtn.addEventListener('click', closeShowModal);
+    
+    // Click outside panel to close
+    if (showOverlay) {
+      showOverlay.addEventListener('click', (e) => {
+        if (e.target === showOverlay) closeShowModal();
+      });
+    }
+    
+    // Esc to close
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && showOverlay && showOverlay.classList.contains('open')) {
+        closeShowModal();
+      }
+    });
+    
   })();
   </script>
 </body>
