@@ -473,14 +473,14 @@
 
     /* ---- Current Show ---- */
     :root{
-      /* Lighter dusty gradient */
+      /* Keep the same dusty palette but slightly reduce alpha so the gradient reads darker */
       --show-grad: linear-gradient(
         90deg,
-        rgba(232, 203, 176, 0.98),
-        rgba(214, 170, 146, 0.98),
-        rgba(242, 221, 200, 0.98),
-        rgba(193, 150, 127, 0.98),
-        rgba(232, 203, 176, 0.98)
+        rgba(232, 203, 176, 0.92),
+        rgba(214, 170, 146, 0.92),
+        rgba(242, 221, 200, 0.92),
+        rgba(193, 150, 127, 0.92),
+        rgba(232, 203, 176, 0.92)
       );
     }
 
@@ -510,7 +510,7 @@
       align-items: flex-start;
     }
 
-    /* Current Show button (NO border ring; gradient background + glow) */
+    /* Current Show button (NO border ring; NO idle glow) */
     .current-show-btn{
       position: relative;
 
@@ -544,16 +544,15 @@
       cursor: pointer;
       text-align: left;
 
-      /* default: no glow here; desktop gets it via media query below */
+      /* NO glow when not hovering */
       box-shadow: none;
 
       transition: transform 200ms ease, box-shadow 220ms ease;
     }
 
-    /* No border pseudo-element */
     .current-show-btn::before{ content: none; }
 
-    /* Gradient background ALWAYS on (slightly darker: lower opacity) */
+    /* Gradient background ALWAYS on (darker: lower opacity) */
     .current-show-btn::after{
       content: "";
       position: absolute;
@@ -564,32 +563,22 @@
       background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
 
-      opacity: 0.16; /* was ~0.22; lower = darker against the dark page */
+      opacity: 0.11;            /* darker/less bright than before */
       transition: opacity 220ms ease;
       pointer-events: none;
     }
 
-    /* Desktop: keep the always-on soft glow (mobile won't inherit this) */
-    @media (min-width: 851px){
-      .current-show-btn{
-        box-shadow:
-          0 0 0 1px rgba(255,255,255,0.04) inset,
-          0 0 22px rgba(232, 203, 176, 0.12),
-          0 0 38px rgba(214, 170, 146, 0.10);
-      }
+    /* Hover: slight grow + VERY minimal subtle glow */
+    .current-show-btn:hover{
+      transform: translateY(-1px) scale(1.02);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04) inset,
+        0 0 12px rgba(232, 203, 176, 0.10),
+        0 0 20px rgba(214, 170, 146, 0.08);
     }
 
-    /* Hover: grow + stronger glow */
-    .current-show-btn:hover{
-      transform: translateY(-1px) scale(1.03);
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.05) inset,
-        0 0 30px rgba(232, 203, 176, 0.18),
-        0 0 56px rgba(214, 170, 146, 0.16),
-        0 0 78px rgba(193, 150, 127, 0.12);
-    }
     .current-show-btn:hover::after{
-      opacity: 0.28; /* was ~0.36; keep hover darker too */
+      opacity: 0.16;            /* still darker on hover (not bright) */
     }
 
     /* Top kicker: centered across entire box */
@@ -614,17 +603,16 @@
       text-shadow: 0 1px 16px rgba(0,0,0,0.55);
     }
 
-    /* Smaller typography inside box (your request) */
     .cs-title{
       font-weight: 700;
-      font-size: 1.40rem; /* was 1.6rem */
+      font-size: 1.40rem;
       margin-left: 0.25rem;
       margin-bottom: 0.35rem;
     }
 
     .cs-lines{
       margin-left: 0.25rem;
-      font-size: 0.98rem; /* was ~1.06rem */
+      font-size: 0.98rem;
       line-height: 1.42;
       opacity: 0.92;
     }
@@ -722,13 +710,11 @@
         max-width: min(520px, 100%);
         margin: 0.25rem 0 1.65rem;
 
-        /* IMPORTANT: no glow on mobile unless hover */
+        /* Explicitly no idle glow on mobile */
         box-shadow: none;
       }
 
       .show-detail-panel{ padding-top: 6.75rem; }
-
-      /* Mobile detailed view text larger */
       .show-detail-copy{ font-size: 1.25rem; line-height: 1.75; }
     }
 
@@ -795,7 +781,7 @@
               aria-controls="showDetailOverlay"
               aria-label="Open current show details: Understory"
             >
-              <div class="cs-kicker">MFA Thesis Exhibition</div>
+              <div class="cs-kicker">Current Show</div>
 
               <div class="cs-left">
                 <div class="cs-title">Understory</div>
