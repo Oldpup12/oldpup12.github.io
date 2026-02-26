@@ -497,7 +497,7 @@
 
     /* ---- Current Show ---- */
     :root{
-      /* Lighter dusty gradient (more visible) */
+      /* Lighter dusty gradient */
       --show-grad: linear-gradient(
         90deg,
         rgba(232, 203, 176, 0.98),
@@ -514,33 +514,30 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Desktop: vertically center the LEFT column content (without changing mobile behavior) */
+    /* Desktop: vertically center the LEFT column content */
     @media (min-width: 851px){
       #home .left{
         display: flex;
-        align-items: center; /* centers height-wise within the left column */
+        align-items: center;
       }
       #home .home-left-stack{
         width: 100%;
       }
 
-      /* Spacing: bio separated from box */
       #home .home-name{ margin-bottom: 2.25rem; }
       #home .home-bio{ margin-bottom: 2.25rem; }
     }
 
-    /* Stack wrapper so we can reorder on mobile */
     .home-left-stack{
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
 
-    /* Current Show button */
+    /* Current Show button (NO border ring now; just gradient background + glow) */
     .current-show-btn{
       position: relative;
 
-      /* ensure it uses the same font as site */
       font: inherit;
       letter-spacing: inherit;
       color: inherit;
@@ -560,49 +557,26 @@
       width: fit-content;
       max-width: min(680px, 100%);
 
-      margin-top: 0; /* spacing handled via bio margin-bottom on desktop */
+      margin-top: 0;
       padding: 1.25rem 1.3rem;
 
-      border: 2px solid transparent;
-      border-radius: 2.6rem; /* much more curvy */
-      background: rgba(0,0,0,0.08);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset;
+      border: none;              /* removed */
+      outline: none;
+      border-radius: 2.6rem;
 
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-
+      background: transparent;   /* background handled by ::after */
       cursor: pointer;
       text-align: left;
 
       transition: transform 200ms ease, box-shadow 220ms ease;
     }
 
-    /* Animated gradient border */
+    /* Removed the border pseudo-element entirely */
     .current-show-btn::before{
-      content: "";
-      position: absolute;
-      inset: 0;
-      padding: 3px; /* thicker = more visible */
-      border-radius: inherit;
-
-      background: var(--show-grad);
-      background-size: 520% 520%;
-      animation: showGradientShift 7.25s linear infinite;
-
-      /* show only border */
-      -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-
-      /* visible dusty glow */
-      filter:
-        drop-shadow(0 0 10px rgba(232, 203, 176, 0.30))
-        drop-shadow(0 0 18px rgba(214, 170, 146, 0.22));
-
-      pointer-events: none;
+      content: none;
     }
 
-    /* Gradient background ALWAYS on (not just hover) */
+    /* Gradient background ALWAYS on */
     .current-show-btn::after{
       content: "";
       position: absolute;
@@ -613,32 +587,32 @@
       background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
 
-      opacity: 0.20; /* default visible */
+      opacity: 0.22;
       transition: opacity 220ms ease;
       pointer-events: none;
     }
 
-    /* Hover: grow + stronger gradient "around it" glow */
+    /* Always-on soft glow (and stronger on hover) */
+    .current-show-btn{
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04) inset,
+        0 0 22px rgba(232, 203, 176, 0.12),
+        0 0 38px rgba(214, 170, 146, 0.10);
+    }
+
     .current-show-btn:hover{
       transform: translateY(-1px) scale(1.03);
       box-shadow:
         0 0 0 1px rgba(255,255,255,0.05) inset,
-        0 0 26px rgba(232, 203, 176, 0.10),
-        0 0 44px rgba(214, 170, 146, 0.12);
+        0 0 30px rgba(232, 203, 176, 0.18),
+        0 0 56px rgba(214, 170, 146, 0.16),
+        0 0 78px rgba(193, 150, 127, 0.12);
     }
 
     .current-show-btn:hover::after{
-      opacity: 0.34;
+      opacity: 0.36;
     }
 
-    .current-show-btn:hover::before{
-      filter:
-        drop-shadow(0 0 14px rgba(232, 203, 176, 0.42))
-        drop-shadow(0 0 26px rgba(214, 170, 146, 0.30))
-        drop-shadow(0 0 36px rgba(193, 150, 127, 0.22));
-    }
-
-    /* Top kicker: centered across entire box */
     .cs-kicker{
       grid-area: kicker;
       text-align: center;
@@ -650,13 +624,14 @@
       margin-bottom: 0.15rem;
       position: relative;
       z-index: 1;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.55);
     }
 
     .cs-left{
       grid-area: left;
       position: relative;
       z-index: 1;
-      text-shadow: 0 1px 16px rgba(0,0,0,0.55); /* readability on always-on gradient */
+      text-shadow: 0 1px 16px rgba(0,0,0,0.55);
     }
 
     .cs-title{
@@ -753,7 +728,7 @@
       max-width: 980px;
     }
 
-    /* Mobile placement: box between name and bio, centered (kept as you liked) */
+    /* Mobile placement: box between name and bio, centered */
     @media (max-width: 850px){
       .home-left-stack{ align-items: center; }
 
@@ -768,12 +743,13 @@
       }
 
       .show-detail-panel{ padding-top: 6.75rem; }
-      .show-detail-copy{ font-size: 1.1rem; }
+
+      /* Mobile detailed view text larger (your request) */
+      .show-detail-copy{ font-size: 1.25rem; line-height: 1.75; }
     }
 
     /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
-      .current-show-btn::before,
       .current-show-btn::after{
         animation: none;
       }
@@ -782,9 +758,6 @@
       }
       .cs-arrow{
         transition: none;
-      }
-      .current-show-btn::before{
-        filter: none;
       }
     }
 
@@ -849,7 +822,7 @@
               <div class="cs-left">
                 <div class="cs-title">Understory</div>
                 <div class="cs-lines">
-                  <div>Moudy Gallery</div>
+                  <div>Moudy Gallery, TCU</div>
                   <div>Feb 25th - Mar 3rd</div>
                   <div>Opening Reception: Feb 27th, 6 - 8 PM</div>
                 </div>
@@ -1076,11 +1049,11 @@
       </div>
 
       <div class="show-detail-copy">
-Understory, featuring the thesis work of MFA Candidate Marcy Davis. Understory will be on view at Moudy Gallery February 25 - March 3 with an opening reception on Friday, February 27, 6-8 pm.
+Understory, featuring the thesis work of MFA Candidate Marcy Davis, will be on view at Moudy Gallery Feb 25th – Mar 3rd, with an opening reception on Feb 27th 6–8 pm.
 
-Understory examines how a body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land-a terrain, restless and alive with invisible life. At these intersections, edges collapse: flesh becomes landscape and architecture breathes like a body. This unfolds into an unsettled in-between where body and structure, inside and outside, intertwine.
+Understory examines how a body is never just a body. It is a structure held by skin, pressed against walls, sinking into the weight of land—a terrain, restless and alive with invisible life. At these intersections, edges collapse: flesh becomes landscape, and architecture breathes like a body. This unfolds into an unsettled in-between where body and structure, inside and outside, intertwine.
 
-The works in Understory disguise their origins. Materials such as asphalt, felt, wax, and clay slip become organic matter appearing as external or internal growth overtaking what was there before, or becoming from what once was. These materials perform a double deception. They suggest the interior scaffolding of a body or the underground architecture of plant growth, ultimately refusing to settle into either. Understory is a gap where things slip between states: structure loosening, edges giving way, one form thriving as another degrades. What builds might also seep. What contains might also rupture. In the slippage, something unnamed persists.
+The works in Understory disguise their origins. Materials such as asphalt, felt, wax, and clay slip become organic matter, appearing as external or internal growth overtaking what was there before—or emerging from it. These materials perform a double deception. They suggest the interior scaffolding of a body or the underground architecture of plant growth, ultimately refusing to settle into either. Understory is a gap where things slip between states: structure loosening, edges giving way, one form thriving as another degrades. What builds might also seep. What contains might also rupture. In the slippage, something unnamed persists.
       </div>
     </div>
   </div>
@@ -1352,6 +1325,7 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       if (!data || !overlay) return;
 
       currentArtId = artId;
+
       overlay.scrollTop = 0;
 
       let materialText = data.material;
@@ -1382,6 +1356,7 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     function restoreWorkScroll(y) {
       const target = Math.max(0, parseInt(String(y || 0), 10) || 0);
+
       const tries = [0, 16, 64, 160, 320];
       tries.forEach(ms => setTimeout(() => window.scrollTo(0, target), ms));
     }
@@ -1394,6 +1369,7 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     function stampWorkScrollY(y) {
       const rounded = Math.max(0, Math.round(y || 0));
+
       if (Math.abs(rounded - lastStampedY) < 8) return;
       lastStampedY = rounded;
 
