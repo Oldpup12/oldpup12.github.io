@@ -497,14 +497,14 @@
 
     /* ---- Current Show ---- */
     :root{
-      /* Dark earthy gradient: brown + deep green + near-black */
+      /* Lighter dusty gradient (more visible) */
       --show-grad: linear-gradient(
         90deg,
-        rgba(42, 28, 18, 0.98),
-        rgba(12, 33, 24, 0.98),
-        rgba(5, 5, 5, 0.98),
-        rgba(18, 42, 30, 0.98),
-        rgba(42, 28, 18, 0.98)
+        rgba(232, 203, 176, 0.98),
+        rgba(214, 170, 146, 0.98),
+        rgba(242, 221, 200, 0.98),
+        rgba(193, 150, 127, 0.98),
+        rgba(232, 203, 176, 0.98)
       );
     }
 
@@ -514,12 +514,20 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Home: align content toward top on desktop */
-    #home .main { align-items: flex-start; }
+    /* Desktop: vertically center the LEFT column content (without changing mobile behavior) */
+    @media (min-width: 851px){
+      #home .left{
+        display: flex;
+        align-items: center; /* centers height-wise within the left column */
+      }
+      #home .home-left-stack{
+        width: 100%;
+      }
 
-    /* Slightly tighten spacing so name/bio/box feel intentional */
-    #home .home-name { margin-bottom: 2.1rem; }
-    #home .home-bio  { margin-bottom: 1.6rem; }
+      /* Spacing: bio separated from box */
+      #home .home-name{ margin-bottom: 2.25rem; }
+      #home .home-bio{ margin-bottom: 2.25rem; }
+    }
 
     /* Stack wrapper so we can reorder on mobile */
     .home-left-stack{
@@ -532,7 +540,7 @@
     .current-show-btn{
       position: relative;
 
-      /* Fix: ensure it uses the SAME font as the site (buttons can default to system font) */
+      /* ensure it uses the same font as site */
       font: inherit;
       letter-spacing: inherit;
       color: inherit;
@@ -550,15 +558,15 @@
       gap: 0.95rem 1.15rem;
 
       width: fit-content;
-      max-width: min(640px, 100%);
+      max-width: min(680px, 100%);
 
-      /* Desktop: sits BELOW bio; spacing handled by bio margin-bottom */
-      margin-top: 0;
-      padding: 1.1rem 1.15rem;
+      margin-top: 0; /* spacing handled via bio margin-bottom on desktop */
+      padding: 1.25rem 1.3rem;
 
       border: 2px solid transparent;
-      border-radius: 1.55rem; /* more curved */
+      border-radius: 2.6rem; /* much more curvy */
       background: rgba(0,0,0,0.08);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.04) inset;
 
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
@@ -566,7 +574,7 @@
       cursor: pointer;
       text-align: left;
 
-      transition: transform 180ms ease, background 220ms ease;
+      transition: transform 200ms ease, box-shadow 220ms ease;
     }
 
     /* Animated gradient border */
@@ -574,11 +582,11 @@
       content: "";
       position: absolute;
       inset: 0;
-      padding: 2px;
+      padding: 3px; /* thicker = more visible */
       border-radius: inherit;
 
       background: var(--show-grad);
-      background-size: 420% 420%;
+      background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
 
       /* show only border */
@@ -586,15 +594,15 @@
       -webkit-mask-composite: xor;
       mask-composite: exclude;
 
-      /* subtle always-on glow */
+      /* visible dusty glow */
       filter:
-        drop-shadow(0 0 10px rgba(12, 33, 24, 0.22))
-        drop-shadow(0 0 12px rgba(42, 28, 18, 0.18));
+        drop-shadow(0 0 10px rgba(232, 203, 176, 0.30))
+        drop-shadow(0 0 18px rgba(214, 170, 146, 0.22));
 
       pointer-events: none;
     }
 
-    /* Hover: fill with same moving gradient */
+    /* Gradient background ALWAYS on (not just hover) */
     .current-show-btn::after{
       content: "";
       position: absolute;
@@ -602,39 +610,39 @@
       border-radius: inherit;
 
       background: var(--show-grad);
-      background-size: 420% 420%;
+      background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
 
-      opacity: 0;
+      opacity: 0.20; /* default visible */
       transition: opacity 220ms ease;
       pointer-events: none;
     }
 
+    /* Hover: grow + stronger gradient "around it" glow */
     .current-show-btn:hover{
-      transform: translateY(-1px) scale(1.01); /* subtle "grow" */
+      transform: translateY(-1px) scale(1.03);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.05) inset,
+        0 0 26px rgba(232, 203, 176, 0.10),
+        0 0 44px rgba(214, 170, 146, 0.12);
     }
 
     .current-show-btn:hover::after{
-      opacity: 0.62; /* darker palette stays readable */
+      opacity: 0.34;
     }
 
-    /* Additional subtle “grow around” effect (bigger glow on hover) */
     .current-show-btn:hover::before{
       filter:
-        drop-shadow(0 0 12px rgba(12, 33, 24, 0.34))
-        drop-shadow(0 0 22px rgba(18, 42, 30, 0.26))
-        drop-shadow(0 0 28px rgba(42, 28, 18, 0.22));
+        drop-shadow(0 0 14px rgba(232, 203, 176, 0.42))
+        drop-shadow(0 0 26px rgba(214, 170, 146, 0.30))
+        drop-shadow(0 0 36px rgba(193, 150, 127, 0.22));
     }
 
-    .current-show-btn:hover .cs-left{
-      text-shadow: 0 1px 16px rgba(0,0,0,0.55);
-    }
-
-    /* Top kicker: truly centered across entire box */
+    /* Top kicker: centered across entire box */
     .cs-kicker{
       grid-area: kicker;
       text-align: center;
-      font-style: italic; /* only italic text requested */
+      font-style: italic;
       font-size: 0.98rem;
       opacity: 0.92;
       justify-self: center;
@@ -648,18 +656,19 @@
       grid-area: left;
       position: relative;
       z-index: 1;
+      text-shadow: 0 1px 16px rgba(0,0,0,0.55); /* readability on always-on gradient */
     }
 
     .cs-title{
       font-weight: 700;
-      font-size: 1.55rem;
-      margin-left: 0.25rem; /* slight left indent */
+      font-size: 1.6rem;
+      margin-left: 0.25rem;
       margin-bottom: 0.4rem;
     }
 
     .cs-lines{
-      margin-left: 0.25rem; /* match indent */
-      font-size: 1.05rem;
+      margin-left: 0.25rem;
+      font-size: 1.06rem;
       line-height: 1.45;
       opacity: 0.92;
     }
@@ -672,6 +681,7 @@
       opacity: 0.92;
       transition: transform 220ms ease, opacity 220ms ease;
       padding-left: 0.25rem;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.55);
     }
 
     .current-show-btn:hover .cs-arrow{
@@ -718,7 +728,6 @@
       opacity: 1;
     }
 
-    /* Fix: left-align heading + body */
     .show-detail-header{
       display: flex;
       align-items: flex-start;
@@ -735,7 +744,6 @@
       line-height: 1.15;
     }
 
-    /* Fix: left-aligned + slightly larger text on desktop AND mobile */
     .show-detail-copy{
       text-align: left;
       white-space: pre-line;
@@ -745,11 +753,10 @@
       max-width: 980px;
     }
 
-    /* Mobile placement: box between name and bio, centered + more breathing room */
+    /* Mobile placement: box between name and bio, centered (kept as you liked) */
     @media (max-width: 850px){
       .home-left-stack{ align-items: center; }
 
-      /* reorder for mobile: Name, Box, Bio */
       .home-name{ order: 1; margin-bottom: 1.55rem; }
       #currentShowBtn{ order: 2; }
       .home-bio{ order: 3; margin-bottom: 0; }
@@ -757,13 +764,11 @@
       .current-show-btn{
         text-align: left;
         max-width: min(520px, 100%);
-        margin: 0.25rem 0 1.65rem; /* more spacing so it doesn’t feel congested */
+        margin: 0.25rem 0 1.65rem;
       }
 
-      #home .home-bio{ margin-bottom: 0; }
-
       .show-detail-panel{ padding-top: 6.75rem; }
-      .show-detail-copy{ font-size: 1.1rem; } /* still larger than before */
+      .show-detail-copy{ font-size: 1.1rem; }
     }
 
     /* Reduce motion */
@@ -1125,16 +1130,13 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
             void el.offsetWidth; // forces reflow to restart CSS animations
             el.classList.add('animate');
           }
-          // If view did NOT change, do not touch .animate (prevents replay)
         } else {
-          // When leaving a view, clear its animate state
           el.classList.remove('animate');
         }
       });
 
       setActiveLink(view);
 
-      // Only show the Work hint when entering Work (not when closing detail)
       if (viewChanged) {
         if (view === 'work') setupWorkHint();
         else teardownWorkHint();
@@ -1167,12 +1169,11 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
     }
 
     function replaceHash(newHash) {
-      // No new history entry:
       history.replaceState(history.state, '', '#' + newHash);
     }
 
     // ---------------------------
-    // WORK HINT (your existing)
+    // WORK HINT
     // ---------------------------
     let workHintTimer = null;
     let workHintController = null;
@@ -1351,7 +1352,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       if (!data || !overlay) return;
 
       currentArtId = artId;
-
       overlay.scrollTop = 0;
 
       let materialText = data.material;
@@ -1375,7 +1375,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       overlay.setAttribute('aria-hidden', 'true');
       currentArtId = null;
 
-      // allow your 0.35s transition to finish
       setTimeout(() => {
         unlockScroll();
       }, 350);
@@ -1383,8 +1382,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     function restoreWorkScroll(y) {
       const target = Math.max(0, parseInt(String(y || 0), 10) || 0);
-
-      // mobile browsers sometimes “snap” after hash navigation; multi-tries wins
       const tries = [0, 16, 64, 160, 320];
       tries.forEach(ms => setTimeout(() => window.scrollTo(0, target), ms));
     }
@@ -1397,12 +1394,9 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
     function stampWorkScrollY(y) {
       const rounded = Math.max(0, Math.round(y || 0));
-
-      // avoid excessive URL churn
       if (Math.abs(rounded - lastStampedY) < 8) return;
       lastStampedY = rounded;
 
-      // Only stamp when we're on Work and not in detail route
       const h = (location.hash || '').toLowerCase();
       if (!h.startsWith('#work') || h.startsWith('#work/')) return;
 
@@ -1420,7 +1414,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       });
     }, { passive: true });
 
-    // Intercept artwork clicks so we stamp scroll BEFORE the hash changes to detail route
     document.addEventListener('click', (e) => {
       const card = e.target.closest('.work-card[data-artwork]');
       if (!card) return;
@@ -1430,14 +1423,10 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       const artId = card.getAttribute('data-artwork');
       if (!artId) return;
 
-      // Stamp current Work scroll into current history entry (no new entry)
       stampWorkScrollY(window.scrollY || 0);
-
-      // Navigate to detail route (creates a back entry)
       location.hash = `work/${artId}`;
     });
 
-    // X closes by going back (so Back and X behave identically)
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {
         if ((location.hash || '').toLowerCase().startsWith('#work/')) {
@@ -1461,7 +1450,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
     function route() {
       const { view, artId, workY } = parseHash();
 
-      // leaving work: force-close modal quickly
       if (view !== 'work' && overlay && overlay.classList.contains('open')) {
         overlay.classList.remove('open');
         overlay.setAttribute('aria-hidden', 'true');
@@ -1473,7 +1461,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
 
       if (view !== 'work') return;
 
-      // Work view logic
       if (artId) {
         if (!overlay.classList.contains('open') || currentArtId !== artId) {
           openDetailModal(artId);
@@ -1481,10 +1468,7 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
         return;
       }
 
-      // Not a detail route: ensure modal is closed
       if (overlay.classList.contains('open')) closeDetailModal();
-
-      // If hash has a stamped y, restore to it (this is the mobile fix)
       if (typeof workY === 'number') restoreWorkScroll(workY);
     }
 
@@ -1517,14 +1501,12 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
     if (showBtn) showBtn.addEventListener('click', openShowModal);
     if (showCloseBtn) showCloseBtn.addEventListener('click', closeShowModal);
 
-    // Click outside panel to close
     if (showOverlay) {
       showOverlay.addEventListener('click', (e) => {
         if (e.target === showOverlay) closeShowModal();
       });
     }
 
-    // Esc to close (Current Show)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && showOverlay && showOverlay.classList.contains('open')) {
         closeShowModal();
