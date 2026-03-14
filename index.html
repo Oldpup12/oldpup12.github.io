@@ -184,7 +184,6 @@
     }
     #work .section-title { margin-top: 0.2rem; }
 
-    /* Hint under Work heading (transition-based, reliable) */
     .work-hint {
       font-size: 1.05rem;
       letter-spacing: 0.3px;
@@ -210,7 +209,6 @@
       gap: 4rem;
     }
 
-    /* Make years always visible (avoids iPhone Chrome “only shows after scroll” behavior) */
     .work-year {
       display: grid;
       grid-template-columns: 120px 1fr;
@@ -372,17 +370,14 @@
     #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: column; }
     .detail-media img { width: 100%; height: auto; display: block; }
 
-    /* Scroll lock (NO body position:fixed) */
     html.modal-open, body.modal-open { overflow: hidden; height: 100%; }
 
-    /* ---- Desktop footer ---- */
     @media (min-width: 851px) {
       .contact a { font-size: 1.25rem; }
       .contact a img { width: 28px; height: 28px; }
       .contact a img.email-icon { width: 21px; height: 21px; }
     }
 
-    /* ---- Mobile ---- */
     @media (max-width: 850px) {
       .main { flex-direction: column; text-align: center; padding: 2rem; }
       .footer { flex-direction: column; gap: 1rem; align-items: flex-end; }
@@ -413,7 +408,6 @@
       }
       .work-card { margin-bottom: 1.25rem; }
 
-      /* Mobile: artwork order for 2025 */
       .work-card[data-artwork="2025-1"] { order: 1; }
       .work-card[data-artwork="2025-3"] { order: 2; }
       .work-card[data-artwork="2025-2"] { order: 3; }
@@ -433,7 +427,6 @@
       #detailGrid[data-artwork="2025-4"] .detail-media:nth-child(3) { break-after: auto; }
       #detailGrid[data-artwork="2024-2"] .detail-media:nth-child(2) { break-after: auto; }
 
-      /* Mobile: Custom image orders */
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(1) { order: 1; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(4) { order: 2; }
       #detailGrid[data-artwork="2026-1"] .detail-media:nth-child(2) { order: 3; }
@@ -473,7 +466,6 @@
 
     /* ---- Current Show ---- */
     :root{
-      /* Keep the same dusty palette but slightly reduce alpha so the gradient reads darker */
       --show-grad: linear-gradient(
         90deg,
         rgba(232, 203, 176, 0.92),
@@ -490,7 +482,6 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Desktop: vertically center the LEFT column content */
     @media (min-width: 851px){
       #home .left{
         display: flex;
@@ -510,17 +501,13 @@
       align-items: flex-start;
     }
 
-    /* Current Show button (NO border ring; NO idle glow) */
     .current-show-btn{
       position: relative;
-
       font: inherit;
       letter-spacing: inherit;
       color: inherit;
-
       appearance: none;
       -webkit-appearance: none;
-
       display: grid;
       grid-template-columns: 1fr auto;
       grid-template-rows: auto 1fr;
@@ -529,46 +516,35 @@
         "left   arrow";
       align-items: center;
       gap: 0.95rem 1.15rem;
-
       width: fit-content;
       max-width: min(680px, 100%);
-
       margin-top: 0;
       padding: 1.25rem 1.3rem;
-
       border: none;
       outline: none;
       border-radius: 2.6rem;
-
-      background: transparent; /* background handled by ::after */
+      background: transparent;
       cursor: pointer;
       text-align: left;
-
-      /* NO glow when not hovering */
       box-shadow: none;
-
       transition: transform 200ms ease, box-shadow 220ms ease;
     }
 
     .current-show-btn::before{ content: none; }
 
-    /* Gradient background ALWAYS on (darker: lower opacity) */
     .current-show-btn::after{
       content: "";
       position: absolute;
       inset: 0;
       border-radius: inherit;
-
       background: var(--show-grad);
       background-size: 520% 520%;
       animation: showGradientShift 7.25s linear infinite;
-
-      opacity: 0.11;            /* darker/less bright than before */
+      opacity: 0.11;
       transition: opacity 220ms ease;
       pointer-events: none;
     }
 
-    /* Hover: slight grow + VERY minimal subtle glow */
     .current-show-btn:hover{
       transform: translateY(-1px) scale(1.02);
       box-shadow:
@@ -578,10 +554,9 @@
     }
 
     .current-show-btn:hover::after{
-      opacity: 0.16;            /* still darker on hover (not bright) */
+      opacity: 0.16;
     }
 
-    /* Top kicker: centered across entire box */
     .cs-kicker{
       grid-area: kicker;
       text-align: center;
@@ -633,19 +608,15 @@
       opacity: 0;
     }
 
-    /* Modal overlay for Current Show */
     .show-detail-overlay{
       position: fixed;
       inset: 0;
       z-index: 60;
-
       background: rgba(0,0,0,0.42);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
-
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.35s ease;
@@ -661,7 +632,6 @@
       width: min(980px, 92vw);
       margin: 0 auto;
       padding: 6.25rem 0 3rem;
-
       transform: translateY(14px);
       opacity: 0;
       transition: transform 0.35s ease, opacity 0.35s ease;
@@ -697,7 +667,6 @@
       max-width: 980px;
     }
 
-    /* Mobile placement: box between name and bio, centered */
     @media (max-width: 850px){
       .home-left-stack{ align-items: center; }
 
@@ -709,8 +678,6 @@
         text-align: left;
         max-width: min(520px, 100%);
         margin: 0.25rem 0 1.65rem;
-
-        /* Explicitly no idle glow on mobile */
         box-shadow: none;
       }
 
@@ -718,11 +685,16 @@
       .show-detail-copy{ font-size: 1.25rem; line-height: 1.75; }
     }
 
-    /* Reduce motion */
     @media (prefers-reduced-motion: reduce){
       .current-show-btn::after{ animation: none; }
       .current-show-btn{ transition: none; }
       .cs-arrow{ transition: none; }
+    }
+
+    /* TEMP: hide Current Show from view without deleting code */
+    #currentShowBtn,
+    #showDetailOverlay {
+      display: none !important;
     }
 
     /* ---- Page text animations ---- */
@@ -1025,9 +997,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
   (function () {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
-    // ---------------------------
-    // ROUTING / VIEW SWITCHING
-    // ---------------------------
     const views = ['home', 'work', 'about', 'contact'];
     const links = {
       home: document.querySelector('.link-home'),
@@ -1099,9 +1068,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       history.replaceState(history.state, '', '#' + newHash);
     }
 
-    // ---------------------------
-    // WORK HINT
-    // ---------------------------
     let workHintTimer = null;
     let workHintController = null;
 
@@ -1146,9 +1112,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       }, { signal: controller.signal });
     }
 
-    // ---------------------------
-    // DETAIL OVERLAY (hash-based)
-    // ---------------------------
     const overlay = document.getElementById('workDetailOverlay');
     const closeBtn = document.getElementById('detailClose');
     const detailMeta = document.getElementById('detailMeta');
@@ -1301,7 +1264,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       overlay.classList.remove('open');
       overlay.setAttribute('aria-hidden', 'true');
       currentArtId = null;
-
       setTimeout(() => unlockScroll(), 350);
     }
 
@@ -1311,9 +1273,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       tries.forEach(ms => setTimeout(() => window.scrollTo(0, target), ms));
     }
 
-    // ---------------------------
-    // WORK SCROLL STAMPING
-    // ---------------------------
     let scrollRAF = null;
     let lastStampedY = -9999;
 
@@ -1366,9 +1325,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
       }
     });
 
-    // ---------------------------
-    // SINGLE ROUTER ENTRYPOINT
-    // ---------------------------
     function route() {
       const { view, artId, workY } = parseHash();
 
@@ -1395,9 +1351,6 @@ The works in Understory disguise their origins. Materials such as asphalt, felt,
     window.addEventListener('hashchange', route);
     window.addEventListener('DOMContentLoaded', route);
 
-    // ---------------------------
-    // CURRENT SHOW OVERLAY
-    // ---------------------------
     const showBtn = document.getElementById('currentShowBtn');
     const showOverlay = document.getElementById('showDetailOverlay');
     const showCloseBtn = document.getElementById('showDetailClose');
